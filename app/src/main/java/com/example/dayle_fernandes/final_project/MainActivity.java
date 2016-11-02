@@ -19,12 +19,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import static java.lang.Math.*;
 
 import com.example.dayle_fernandes.final_project.R;
-import com.google.android.gms.analytics.ecommerce.Product;
 
 import android.widget.Adapter;
 import android.widget.ListAdapter;
@@ -57,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RecyclerView.LayoutManager aLayoutManager;
     RecyclerView.Adapter aAdapter;
     testProductList list;
-    MainActivity selfRef=this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,19 +89,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
 
-       // AdapterView.OnItemClickListener flag= new AdapterView.OnItemClickListener() {
-          //  @Override
-         //   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-          //      String name=(ProductInfo)adapterView.getAdapter().getItem(i);
-          //      Intent f=new Intent(selfRef,ProductLocation.class);
-          //      f.
-          //  }
-     //   };
 
 
         aRecyclerView.setAdapter(aAdapter);
         aAdapter.notifyDataSetChanged();
+
+
+
+
+
     }
+
+
 
 
     @Override

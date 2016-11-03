@@ -1,7 +1,7 @@
 package com.example.dayle_fernandes.final_project;
 
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
+//import com.google.android.gms.maps.*;
+//import com.google.android.gms.maps.model.*;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

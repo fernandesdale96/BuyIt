@@ -24,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+
+import static com.example.dayle_fernandes.final_project.R.id.test;
 import static java.lang.Math.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.NameValuePair;
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
    // JSONParser jParser = new JSONParser();
     ArrayList<ProductInfo> productsList;
     // url to get all products list
-    private static String url_all_products = "http://localhost/FinalProject/get_all_products";
+    private static String url_all_products = "http://10.0.2.2:8080//FinalProject/get_all_products";
 
     private ProgressDialog pDialog;
     private static final String PRODUCTS = "products";
@@ -125,6 +127,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Hashmap for ListView
         productsList = new ArrayList<ProductInfo>();
+       /* aAdapter=new ProductAdapter(testProductList.getProducts());
+        aRecyclerView.setAdapter(aAdapter);
+        aAdapter.notifyDataSetChanged(); */
+        aLayoutManager = new LinearLayoutManager(this);
+        aRecyclerView.setLayoutManager(aLayoutManager);
 
         new GetQuestions().execute();
 
@@ -145,8 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         //aAdapter = new ProductAdapter(list.getProducts());
-        aLayoutManager = new LinearLayoutManager(this);
-        aRecyclerView.setLayoutManager(aLayoutManager);
+
        // aRecyclerView.setAdapter(aAdapter);
        // aAdapter.notifyDataSetChanged();
     }
@@ -159,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Showing progress dialog
             pDialog = new ProgressDialog(selfRef);
             pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
 
         }

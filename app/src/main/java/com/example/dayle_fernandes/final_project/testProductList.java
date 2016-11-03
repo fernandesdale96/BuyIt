@@ -13,7 +13,7 @@ import static android.R.attr.name;
 public class testProductList {
     private static testProductList instance = new testProductList();
 
-    private ArrayList<ProductInfo> products;
+    private static ArrayList<ProductInfo> products;
 
 
     public static testProductList getInstance(){
@@ -21,7 +21,7 @@ public class testProductList {
     }
 
     private testProductList(){
-        products = new ArrayList<>();
+       products = new ArrayList<>();
         String[] name = {"Colgate Toothpaste", "Snapple", "Haribo Gummy Bears", "Tylenol Cold Tablets", "Cleanex Tissue", "Doritos Nacho Cheese", "Cheetos Cheese Sticks", "Eclipse Mints",
                             "Ham", "Cream Cheese", "White Rice", "Jacob Creek Wine"};
         double[] prices = {5,11,10.50,20.20,5.40,16.40,15.20,9.81,12.50,32.50,85.20, 98.00};
@@ -36,7 +36,7 @@ public class testProductList {
 
     }
 
-    public ArrayList<ProductInfo> getProducts(){
+    public static ArrayList<ProductInfo> getProducts(){
         return products;
     }
 

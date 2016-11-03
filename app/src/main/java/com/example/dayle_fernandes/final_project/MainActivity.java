@@ -24,7 +24,7 @@ import android.widget.ArrayAdapter;
 import static java.lang.Math.*;
 
 import com.example.dayle_fernandes.final_project.R;
-import com.google.android.gms.analytics.ecommerce.Product;
+//import com.google.android.gms.analytics.ecommerce.Product;
 
 import android.widget.Adapter;
 import android.widget.ListAdapter;
@@ -92,17 +92,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         aAdapter = new ProductAdapter(list.getProducts());
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
-
-       // AdapterView.OnItemClickListener flag= new AdapterView.OnItemClickListener() {
-          //  @Override
-         //   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-          //      String name=(ProductInfo)adapterView.getAdapter().getItem(i);
-          //      Intent f=new Intent(selfRef,ProductLocation.class);
-          //      f.
-          //  }
-     //   };
-
-
         aRecyclerView.setAdapter(aAdapter);
         aAdapter.notifyDataSetChanged();
     }

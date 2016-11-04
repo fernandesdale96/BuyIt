@@ -127,9 +127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Hashmap for ListView
         productsList = new ArrayList<ProductInfo>();
-       /* aAdapter=new ProductAdapter(testProductList.getProducts());
-        aRecyclerView.setAdapter(aAdapter);
-        aAdapter.notifyDataSetChanged(); */
+       
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
 

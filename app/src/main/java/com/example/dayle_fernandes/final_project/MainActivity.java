@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
    // JSONParser jParser = new JSONParser();
     ArrayList<ProductInfo> productsList;
     // url to get all products list
-    private static String url_all_products = "http://10.0.2.2:8080//FinalProject/get_all_products";
+    private static String url_all_products = "http://10.0.2.2/FinalProject/get_all_products.php";
 
     private ProgressDialog pDialog;
     private static final String PRODUCTS = "products";
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             aAdapter=new ProductAdapter(productsList);
             aRecyclerView.setAdapter(aAdapter);
-            aAdapter.notifyDataSetChanged();
+          //  aAdapter.notifyDataSetChanged();
           /*  ListAdapter adapter = new SimpleAdapter(
                     getActivity(),
                     questionsList,

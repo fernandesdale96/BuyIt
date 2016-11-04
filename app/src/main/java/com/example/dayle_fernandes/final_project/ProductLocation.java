@@ -12,7 +12,7 @@ import android.widget.TextView;
 /**
  * Created by aksharma2 on 01-11-2016.
  */
-public class ProductLocation extends AppCompatActivity{
+public class  ProductLocation extends AppCompatActivity{
 
     //private void prod
 

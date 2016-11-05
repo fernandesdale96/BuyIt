@@ -60,6 +60,7 @@ public class ServiceHandler {
                 }
 
                 httpResponse = httpClient.execute(httpPost);
+                return "success";
 
             } else if (method == GET) {
                 // appending params to url

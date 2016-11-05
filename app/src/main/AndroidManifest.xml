@@ -40,6 +40,8 @@
         </activity>
 
         <activity android:name=".ProductLocation"></activity>
+        <activity android:name=".MenuActivity"></activity>
+        <activity android:name=".AddProduct"></activity>
 
         <activity
             android:name="com.example.dayle_fernandes.final_project.SplashActivity"

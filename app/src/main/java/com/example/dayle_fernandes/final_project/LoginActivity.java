@@ -29,10 +29,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.dayle_fernandes.final_project.R.id.btn_login;
 import static com.example.dayle_fernandes.final_project.R.id.intent_action;
 import static com.example.dayle_fernandes.final_project.R.id.start;
-import static com.google.android.gms.analytics.internal.zzy.h;
-import static com.google.android.gms.analytics.internal.zzy.i;
-import static com.google.android.gms.analytics.internal.zzy.n;
-import static com.google.android.gms.analytics.internal.zzy.p;
+
 
 
 /**
@@ -229,7 +226,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.hide();
+            mProgressDialog.dismiss();
         }
     }
 

@@ -36,15 +36,15 @@ public class MainScreenActivity extends Activity{
         });
 
         // view products click event
-     /*   btnNewProduct.setOnClickListener(new View.OnClickListener() {
+       btnNewProduct.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 // Launching create new product activity
-                Intent i = new Intent(getApplicationContext(), NewProductActivity.class);
+                Intent i = new Intent(getApplicationContext(), AddProduct.class);
                 startActivity(i);
 
             }
-        });   */
+        });
     }
 }

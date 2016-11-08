@@ -51,10 +51,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             aStore = (TextView) view.findViewById(R.id.product_store);
             ctx=view.getContext();
 
-            //To set onClick Listener for each item which is held by ViewHolder
-            view.setOnClickListener(new View.OnClickListener() {
+          /*  view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onClick(View v) {
+                public boolean onLongClick(View v) {
                     Intent i;
                     ProductInfo pinfo= getInfo(pName.getText().toString());
                     Toast.makeText(view.getContext(),pName.getText().toString(),Toast.LENGTH_LONG).show();
@@ -75,11 +74,55 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     //  i.putExtra(PROD_PRICE,Double.toString(price));
                     //  i.putExtra(PROD_DIST,Double.toString(dist));
                     v.getContext().startActivity(i);
+                    return true;
+                }
+            }); */
+
+            view.setOnTouchListener(new OnSwipeTouchListener(ctx) {
+                public void onSwipeTop() {
+                    Toast.makeText(ctx, "top", Toast.LENGTH_SHORT).show();
+                }
+                public void onSwipeRight() {
+                    Toast.makeText(ctx, "right", Toast.LENGTH_SHORT).show();
+                }
+                public void onSwipeLeft() {
+                    Toast.makeText(ctx, "left", Toast.LENGTH_SHORT).show();
+                }
+                public void onSwipeBottom() {
+                    Toast.makeText(ctx, "bottom", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onClick() {
+                    super.onClick();
+                    Intent i;
+                    ProductInfo pinfo= getInfo(pName.getText().toString());
+                    Toast.makeText(view.getContext(),pName.getText().toString(),Toast.LENGTH_LONG).show();
+                    String name=pinfo.getName();
+                    String price=Double.toString(pinfo.getPrice());
+                    String store=pinfo.getStore();
+                    String dist=Double.toString(pinfo.getDistance());
+                    i=new Intent(ctx,ProductLocation.class);
+                    Bundle b=new Bundle();
+                    b.putString("PROD_NAME",name);
+                    b.putString("PROD_PRICE",price);
+                    b.putString("PROD_STORE",store);
+                    b.putString("PROD_DIST",dist);
+
+                    i.putExtras(b);
+                    //  f.putExtra(PROD_PRICE,price);
+                    //  i.putExtra(PROD_STORE,store);
+                    //  i.putExtra(PROD_PRICE,Double.toString(price));
+                    //  i.putExtra(PROD_DIST,Double.toString(dist));
+                    view.getContext().startActivity(i);
 
                 }
             });
 
-        }
+            //To set onClick Listener for each item which is held by ViewHolder
+
+
+    }
 
     }
 

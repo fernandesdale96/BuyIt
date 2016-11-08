@@ -41,6 +41,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView aDistance;
         TextView aStore;
         private Context ctx=null;
+        OnSwipeTouchListener onSwipeTouchListener;
 
 
         public ViewHolder(final View view){
@@ -78,7 +79,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 }
             }); */
 
-            view.setOnTouchListener(new OnSwipeTouchListener(ctx) {
+           onSwipeTouchListener=(new OnSwipeTouchListener(ctx) {
                 public void onSwipeTop() {
                     Toast.makeText(ctx, "top", Toast.LENGTH_SHORT).show();
                 }
@@ -120,8 +121,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             });
 
             //To set onClick Listener for each item which is held by ViewHolder
-
-
+        view.setOnTouchListener(onSwipeTouchListener);
     }
 
     }

@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import DB.ProductHandler;
+
 
 /**
  * Created by dayle_fernandes on 31-Oct-16.
@@ -23,6 +25,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     private ArrayList<ProductInfo> inf;
     ProductAdapter selfRef;
+
 
     //helper method to get ProductInfo object
     private ProductInfo getInfo(String name){
@@ -42,15 +45,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView aStore;
         private Context ctx=null;
         OnSwipeTouchListener onSwipeTouchListener;
+        ProductHandler productHandler;
+
 
 
         public ViewHolder(final View view){
             super(view);
+            ctx=view.getContext();
+            productHandler = new ProductHandler(ctx);
+            productHandler.open();
             pName = (TextView) view.findViewById(R.id.selected_prod_name);
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
             aDistance = (TextView) view.findViewById(R.id.product_distance);
             aStore = (TextView) view.findViewById(R.id.product_store);
-            ctx=view.getContext();
 
           /*  view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -83,11 +90,21 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 public void onSwipeTop() {
                     Toast.makeText(ctx, "top", Toast.LENGTH_SHORT).show();
                 }
+
                 public void onSwipeRight() {
                     Toast.makeText(ctx, "right", Toast.LENGTH_SHORT).show();
                 }
+
                 public void onSwipeLeft() {
-                    Toast.makeText(ctx, "left", Toast.LENGTH_SHORT).show();
+                    ProductInfo pinfo=null;
+                    Toast.makeText(ctx, "Added to cart", Toast.LENGTH_SHORT).show();
+                    pinfo.setName(pName.getText().toString());
+                    pinfo.setPrice(Double.parseDouble(pPrice.getText().toString()));
+                    pinfo.setDistance(Double.parseDouble(aDistance.getText().toString()));
+                    pinfo.setStore(aStore.getText().toString());
+                    productHandler.addProduct(pinfo);
+
+
                 }
                 public void onSwipeBottom() {
                     Toast.makeText(ctx, "bottom", Toast.LENGTH_SHORT).show();

@@ -10,6 +10,8 @@ import android.util.Log;
 import com.example.dayle_fernandes.final_project.ProductInfo;
 import com.google.android.gms.analytics.ecommerce.Product;
 
+import java.util.ArrayList;
+
 /**
  * Created by aksharma2 on 08-11-2016.
  */
@@ -49,4 +51,33 @@ public class ProductHandler{
         ProductInfo pinfo=new ProductInfo(Long.parseLong(cursor.getString(0)), cursor.getString(1),Double.parseDouble(cursor.getString(2)), Double.parseDouble(cursor.getString(3)), cursor.getString(4));
         return pinfo;
     }
+
+    public ProductInfo addProduct(ProductInfo pinfo){
+        ContentValues values = new ContentValues();
+        values.put(ProductDBHandler.COLUMN_NAME, pinfo.getName());
+        values.put(ProductDBHandler.COLUMN_PRICE, pinfo.getPrice());
+        values.put(ProductDBHandler.COLUMN_DISTANCE, pinfo.getDistance());
+        values.put(ProductDBHandler.COLUMN_STORE, pinfo.getStore());
+        long id = database.insert(ProductDBHandler.TABLE_PRODUCTS,null, values);
+        pinfo.setId(id);
+        return pinfo;
+    }
+
+    public ArrayList<ProductInfo> getProducts(){
+        Cursor cursor = database.query(ProductDBHandler.TABLE_PRODUCTS,allColumns,null,null,null,null,null);
+        ArrayList<ProductInfo>products=new ArrayList<>();
+        if(cursor.getCount()>0){
+            while(cursor.moveToNext()) {
+                ProductInfo pinfo = new ProductInfo();
+                pinfo.setId(cursor.getLong(cursor.getColumnIndex(ProductDBHandler.COLUMN_ID)));
+                pinfo.setName(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_NAME)));
+                pinfo.setPrice(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_PRICE))));
+                pinfo.setDistance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_DISTANCE))));
+                pinfo.setStore(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_STORE)));
+                products.add(pinfo);
+            }
+        }
+        return products;
+    }
+
 }

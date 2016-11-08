@@ -15,6 +15,8 @@ public class ProductInfo implements Serializable{
     private double distance;
     private String store;
 
+    public ProductInfo(){}
+
     public ProductInfo(String aname, double aprice, double adistance, String aStore){
         this.name = aname;
         this.price = aprice;
@@ -46,6 +48,22 @@ public class ProductInfo implements Serializable{
 
     public String getStore(){
         return store;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
     }
 
     public void setId(long id){

@@ -138,17 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Creating JSON Parser object
         //JSONParser jParser = new JSONParser();
-
-
-
-
-
-
-
-
-
-
-
         //aAdapter = new ProductAdapter(list.getProducts());
 
        // aRecyclerView.setAdapter(aAdapter);

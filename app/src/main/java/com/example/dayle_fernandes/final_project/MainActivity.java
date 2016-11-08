@@ -187,7 +187,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == com.example.dayle_fernandes.final_project.R.id.nav_home) {
 
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_payment) {
-            //TODO: Add intent to add/edit payment options
+            Intent intent = new Intent(MainActivity.this,CreditCardFragmentActivity.class);
+            startActivity(intent);
+            finish();
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_market) {
             //TODO: Add intent to list of all markets
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {

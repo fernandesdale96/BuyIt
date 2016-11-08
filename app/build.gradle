@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.0"
@@ -24,6 +30,12 @@ android {
     }
 }
 
+
+
+
+
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -35,6 +47,9 @@ dependencies {
     compile 'com.google.android.gms:play-services:9.4.0+'
     compile 'com.google.android.gms:play-services-auth:9.4.0+'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.movile:creditcardguide:1.2-beta'
+
+
 
 }
 apply plugin: 'com.google.gms.google-services'

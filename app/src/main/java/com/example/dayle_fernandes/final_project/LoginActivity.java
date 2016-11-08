@@ -29,7 +29,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.dayle_fernandes.final_project.R.id.btn_login;
 import static com.example.dayle_fernandes.final_project.R.id.intent_action;
 import static com.example.dayle_fernandes.final_project.R.id.start;
-
+import static com.google.android.gms.analytics.internal.zzy.v;
 
 
 /**
@@ -48,12 +48,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText email;
     private EditText pass;
     private TextView signup;
-    private String name;
-    private String profile_url;
-    private String email_id;
+    private static String name;
+    private static String profile_url;
+    private static String email_id;
     private String password;
     private boolean google_flag = false;
 
+
+    public static String getName(){
+        return name;
+    }
+
+    public static String getProfile(){
+        return profile_url;
+    }
+
+    public static String getEmail(){
+        return email_id;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

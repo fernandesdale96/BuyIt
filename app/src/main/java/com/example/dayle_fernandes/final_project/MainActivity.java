@@ -2,12 +2,15 @@ package com.example.dayle_fernandes.final_project;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,12 +24,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+
+import static com.example.dayle_fernandes.final_project.R.id.profile_image;
+import static com.example.dayle_fernandes.final_project.R.id.user;
+import static com.google.android.gms.analytics.internal.zzy.n;
 import static java.lang.Math.*;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.dayle_fernandes.final_project.R;
 import com.google.android.gms.analytics.ecommerce.Product;
+import com.google.android.gms.vision.text.Text;
 
 import android.widget.Adapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -49,6 +61,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RecyclerView.LayoutManager aLayoutManager;
     RecyclerView.Adapter aAdapter;
     testProductList list;
-    MainActivity selfRef=this;
+    MainActivity selfRef = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +96,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, drawer, toolbar, com.example.dayle_fernandes.final_project.R.string.navigation_drawer_open, com.example.dayle_fernandes.final_project.R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        String email = LoginActivity.getEmail();
+        String name = LoginActivity.getName();
+        String profile = LoginActivity.getProfile();
 
         NavigationView navigationView = (NavigationView) findViewById(com.example.dayle_fernandes.final_project.R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View v = navigationView.getHeaderView(0);
+        TextView nav_user = (TextView) v.findViewById(user);
+        final ImageView user_profile = (ImageView) v.findViewById(profile_image);
+
+        if (name == null) {
+            nav_user.setText(email);
+        } else {
+            nav_user.setText(name);
+        }
+
+        if(profile != null) {
+            Glide.with(getApplicationContext()).load(profile).asBitmap().into(new BitmapImageViewTarget(user_profile) {
+                @Override
+                protected void setResource(Bitmap resource){
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(getApplicationContext().getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    user_profile.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
+
 
         aRecyclerView = (RecyclerView) findViewById(R.id.productlist_recyclerView);
         aRecyclerView.setHasFixedSize(true);
@@ -93,14 +131,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
 
-       // AdapterView.OnItemClickListener flag= new AdapterView.OnItemClickListener() {
-          //  @Override
-         //   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-          //      String name=(ProductInfo)adapterView.getAdapter().getItem(i);
-          //      Intent f=new Intent(selfRef,ProductLocation.class);
-          //      f.
-          //  }
-     //   };
+        // AdapterView.OnItemClickListener flag= new AdapterView.OnItemClickListener() {
+        //  @Override
+        //   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        //      String name=(ProductInfo)adapterView.getAdapter().getItem(i);
+        //      Intent f=new Intent(selfRef,ProductLocation.class);
+        //      f.
+        //  }
+        //   };
 
 
         aRecyclerView.setAdapter(aAdapter);

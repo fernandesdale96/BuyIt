@@ -32,12 +32,11 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ProductLocation" />
-
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
@@ -48,15 +47,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CreditCardFragmentActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
-        <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CreditCardForm"
+            android:label="CreditCardForm"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity android:name=".PaymentActivity"
+            android:label="Payment"
+            ></activity>
     </application>
 
 </manifest>

@@ -8,4 +8,8 @@
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="label_owner">owner</string>
     <string name="valid_thru">valid thru</string>
+    <string name="purchase">Purchase</string>
+    <string name="valid">Form is valid</string>
+    <string name="invalid">Form is invalid</string>
+    <string name="action_newcard">New Card</string>
 </resources>

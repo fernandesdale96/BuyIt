@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import static com.google.android.gms.analytics.internal.zzy.c;
+
 
 /**
  * Created by dayle_fernandes on 09-Nov-16.

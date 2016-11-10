@@ -12,4 +12,5 @@
     <string name="valid">Form is valid</string>
     <string name="invalid">Form is invalid</string>
     <string name="action_newcard">New Card</string>
+    <string name="title_activity_location">Map</string>
 </resources>

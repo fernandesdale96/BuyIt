@@ -62,7 +62,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     String price=Double.toString(pinfo.getPrice());
                     String store=pinfo.getStore();
                     String dist=Double.toString(pinfo.getDistance());
-                    i=new Intent(ctx,ProductLocation.class);
+                    i=new Intent(ctx,LocationActivity.class);
                     Bundle b=new Bundle();
                     b.putString("PROD_NAME",name);
                     b.putString("PROD_PRICE",price);

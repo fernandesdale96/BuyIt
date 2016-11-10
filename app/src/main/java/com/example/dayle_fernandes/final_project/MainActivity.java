@@ -27,7 +27,7 @@ import android.widget.ArrayAdapter;
 
 import static com.example.dayle_fernandes.final_project.R.id.profile_image;
 import static com.example.dayle_fernandes.final_project.R.id.user;
-import static com.google.android.gms.analytics.internal.zzy.n;
+
 import static java.lang.Math.*;
 
 import com.bumptech.glide.Glide;
@@ -131,14 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
 
-        // AdapterView.OnItemClickListener flag= new AdapterView.OnItemClickListener() {
-        //  @Override
-        //   public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        //      String name=(ProductInfo)adapterView.getAdapter().getItem(i);
-        //      Intent f=new Intent(selfRef,ProductLocation.class);
-        //      f.
-        //  }
-        //   };
+
 
 
         aRecyclerView.setAdapter(aAdapter);
@@ -191,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
 
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_market) {
-            //TODO: Add intent to list of all markets
+
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {
             finish();
             System.exit(0);

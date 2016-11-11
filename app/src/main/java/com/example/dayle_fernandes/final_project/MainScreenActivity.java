@@ -13,6 +13,7 @@ public class MainScreenActivity extends Activity{
 
     Button btnViewProducts;
     Button btnNewProduct;
+    Button btnViewBasket;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,8 @@ public class MainScreenActivity extends Activity{
         // Buttons
         btnViewProducts = (Button) findViewById(R.id.btnViewProducts);
         btnNewProduct = (Button) findViewById(R.id.btnCreateProduct);
+        btnViewBasket = (Button)findViewById(R.id.btnViewBasket);
+
 
         // view products click event
         btnViewProducts.setOnClickListener(new View.OnClickListener() {
@@ -46,5 +49,15 @@ public class MainScreenActivity extends Activity{
 
             }
         });
+
+       btnViewBasket.setOnClickListener(
+               new View.OnClickListener() {
+                   @Override
+                   public void onClick(View view) {
+                       Intent i = new Intent(getApplicationContext(), BasketActivity.class);
+                       startActivity(i);
+                   }
+               }
+       );
     }
 }

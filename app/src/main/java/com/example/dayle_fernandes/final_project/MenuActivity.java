@@ -14,7 +14,7 @@ public class MenuActivity extends Activity {
 
     Button addButton;
     Button viewButton;
-    Button viewAddedButton;
+    Button viewBasketButton;
     MenuActivity selfRef=this;
 
     @Override
@@ -23,7 +23,7 @@ public class MenuActivity extends Activity {
         setContentView(R.layout.menuscreen);
         addButton=(Button)findViewById(R.id.addButton);
         viewButton=(Button)findViewById(R.id.viewButton);
-        viewAddedButton = (Button)findViewById(R.id.viewAddedButton);
+        viewBasketButton = (Button)findViewById(R.id.viewBasketButton);
 
         addButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -47,12 +47,12 @@ public class MenuActivity extends Activity {
                 }
         );
 
-        viewAddedButton.setOnClickListener(
+        viewBasketButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent i;
-                        i=new Intent(selfRef,ViewAddedProducts.class);
+                        i=new Intent(selfRef,BasketActivity.class);
                         startActivity(i);
                     }
                 }

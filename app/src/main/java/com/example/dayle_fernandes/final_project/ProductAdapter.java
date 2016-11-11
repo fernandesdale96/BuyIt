@@ -45,15 +45,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView aStore;
         private Context ctx=null;
         OnSwipeTouchListener onSwipeTouchListener;
-        ProductHandler productHandler;
+      //  ProductHandler productHandler;
 
 
 
         public ViewHolder(final View view){
             super(view);
             ctx=view.getContext();
-            productHandler = new ProductHandler(ctx);
-            productHandler.open();
+         //   productHandler = new ProductHandler(ctx);
+         //   productHandler.open();
             pName = (TextView) view.findViewById(R.id.selected_prod_name);
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
             aDistance = (TextView) view.findViewById(R.id.product_distance);
@@ -102,7 +102,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     pinfo.setPrice(Double.parseDouble(pPrice.getText().toString()));
                     pinfo.setDistance(Double.parseDouble(aDistance.getText().toString()));
                     pinfo.setStore(aStore.getText().toString());
-                    productHandler.addProduct(pinfo);
+                  //  productHandler.addProduct(pinfo);
 
 
                 }

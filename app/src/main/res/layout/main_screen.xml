@@ -20,4 +20,11 @@
         android:text="Add New Products"
         android:layout_marginTop="25dip"/>
 
+    <!--  Button to view Basket screen -->
+    <Button android:id="@+id/btnViewBasket"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="View Basket"
+        android:layout_marginTop="25dip"/>
+
 </LinearLayout>

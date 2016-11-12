@@ -57,7 +57,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 public void onClick(View v) {
                     Intent i;
                     ProductInfo pinfo= getInfo(pName.getText().toString());
-                    Toast.makeText(view.getContext(),pName.getText().toString(),Toast.LENGTH_LONG).show();
+                    //Toast.makeText(view.getContext(),pName.getText().toString(),Toast.LENGTH_LONG).show();
                     String name=pinfo.getName();
                     String price=Double.toString(pinfo.getPrice());
                     String store=pinfo.getStore();

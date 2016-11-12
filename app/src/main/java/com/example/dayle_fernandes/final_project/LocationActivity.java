@@ -53,6 +53,7 @@ import android.os.AsyncTask;
 
 import java.util.ArrayList;
 
+import static com.example.dayle_fernandes.final_project.R.id.map;
 import static com.google.android.gms.analytics.internal.zzy.ex;
 
 /**
@@ -71,6 +72,10 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     Button cancel;
     Button cart;
     ArrayList<LatLng> markerPoints;
+    LatLng destination;
+    String aStore;
+    //Float distance;
+    TextView tv3;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,15 +88,14 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         Bundle b = i.getExtras();
         String name = b.getString("PROD_NAME");
         String price = b.getString("PROD_PRICE");
-        String dist = b.getString("PROD_DIST");
         String store = b.getString("PROD_STORE");
+        aStore = store;
 
         TextView tv = (TextView) findViewById(R.id.selected_prod_name);
         tv.setText(name);
         TextView tv2 = (TextView) findViewById(R.id.selected_prod_price);
         tv2.setText(price + " HKD");
-        TextView tv3 = (TextView) findViewById(R.id.selected_prod_distance);
-        tv3.setText(dist + " KM");
+
         TextView tv4 = (TextView) findViewById(R.id.selected_prod_store);
         tv4.setText(store);
         cancel = (Button) findViewById(R.id.cancel_button);
@@ -117,7 +121,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFrag.getMapAsync(this);
         buildGoogleApiClient();
     }
@@ -186,6 +190,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
     }
 
+
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -195,7 +200,11 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         }
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         markerPoints.add(latLng);
-        LatLng adestination = new LatLng(22.337004,114.174905);
+
+        testLocation al = testLocation.getInstance();
+
+        LatLng adestination = al.returnNearestStore(aStore,latLng);
+
         markerPoints.add(adestination);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
@@ -218,16 +227,16 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         mCurrentLocationMarker = mGoogleMap.addMarker(markerOptions);
         destinationLocationMarker = mGoogleMap.addMarker(destOptions);
 
-        if(markerPoints.size()>=2){
+        if (markerPoints.size() >= 2) {
             LatLng origin = markerPoints.get(0);
             LatLng destination = markerPoints.get(1);
-            String url = geturl(origin,destination);
-            Log.d("onLocationChanged",url.toString());
+            String url = geturl(origin, destination);
+            Log.d("onLocationChanged", url.toString());
             FetchURL fetchUrl = new FetchURL();
             fetchUrl.execute(url);
 
         }
-        CameraUpdate clocation= CameraUpdateFactory.newLatLngZoom(latLng,13);
+        CameraUpdate clocation = CameraUpdateFactory.newLatLngZoom(latLng, 13);
         mGoogleMap.animateCamera(clocation);
 
 
@@ -292,7 +301,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    private String downloadURL(String strurl) throws IOException{
+    private String downloadURL(String strurl) throws IOException {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
@@ -330,6 +339,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         return data;
 
     }
+
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
         // Parsing the data in non-ui thread
@@ -341,17 +351,17 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
             try {
                 jObject = new JSONObject(jsonData[0]);
-                Log.d("ParserTask",jsonData[0].toString());
+                Log.d("ParserTask", jsonData[0].toString());
                 DataParser parser = new DataParser();
                 Log.d("ParserTask", parser.toString());
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-                Log.d("ParserTask","Executing routes");
-                Log.d("ParserTask",routes.toString());
+                Log.d("ParserTask", "Executing routes");
+                Log.d("ParserTask", routes.toString());
 
             } catch (Exception e) {
-                Log.d("ParserTask",e.toString());
+                Log.d("ParserTask", e.toString());
                 e.printStackTrace();
             }
             return routes;
@@ -360,20 +370,36 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points;
+            ArrayList points = null;
             PolylineOptions lineOptions = null;
+            MarkerOptions markerOptions = new MarkerOptions();
+            String distance = "";
+            String duration = "";
 
-            // Traversing through all the routes
+            if (result.size() < 1) {
+                Toast.makeText(getBaseContext(), "No Points", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+// Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<>();
+                points = new ArrayList();
                 lineOptions = new PolylineOptions();
 
-                // Fetching i-th route
+// Fetching i-th route
                 List<HashMap<String, String>> path = result.get(i);
 
-                // Fetching all the points in i-th route
+// Fetching all the points in i-th route
                 for (int j = 0; j < path.size(); j++) {
                     HashMap<String, String> point = path.get(j);
+
+                    if (j == 0) { // Get distance from the list
+                        distance = (String) point.get("distance");
+                        continue;
+                    } else if (j == 1) { // Get duration from the list
+                        duration = (String) point.get("duration");
+                        continue;
+                    }
 
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
@@ -382,22 +408,19 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                     points.add(position);
                 }
 
-                // Adding all the points in the route to LineOptions
+// Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(10);
+                lineOptions.width(8);
                 lineOptions.color(Color.RED);
 
-                Log.d("onPostExecute","onPostExecute lineoptions decoded");
-
             }
 
-            // Drawing polyline in the Google Map for the i-th route
-            if(lineOptions != null) {
-                mGoogleMap.addPolyline(lineOptions);
-            }
-            else {
-                Log.d("onPostExecute","without Polylines drawn");
-            }
+            tv3 = (TextView) findViewById(R.id.selected_prod_distance);
+            String adistance = distance.replaceAll("km", "KM");
+            tv3.setText(adistance);
+
+// Drawing polyline in the Google Map for the i-th route
+            mGoogleMap.addPolyline(lineOptions);
         }
     }
 

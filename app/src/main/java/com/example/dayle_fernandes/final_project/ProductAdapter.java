@@ -47,7 +47,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             super(view);
             pName = (TextView) view.findViewById(R.id.selected_prod_name);
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
-            aDistance = (TextView) view.findViewById(R.id.product_distance);
             aStore = (TextView) view.findViewById(R.id.product_store);
             ctx=view.getContext();
 
@@ -61,13 +60,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     String name=pinfo.getName();
                     String price=Double.toString(pinfo.getPrice());
                     String store=pinfo.getStore();
-                    String dist=Double.toString(pinfo.getDistance());
+
                     i=new Intent(ctx,LocationActivity.class);
                     Bundle b=new Bundle();
                     b.putString("PROD_NAME",name);
                     b.putString("PROD_PRICE",price);
                     b.putString("PROD_STORE",store);
-                    b.putString("PROD_DIST",dist);
+
 
                     i.putExtras(b);
                     //  f.putExtra(PROD_PRICE,price);
@@ -100,9 +99,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         double n = product.getPrice();
         String s = String.valueOf(n) + " HKD";
         holder.pPrice.setText(s);
-        double m = product.getDistance();
-        String q = String.valueOf(m) + " KM";
-        holder.aDistance.setText(q);
         holder.aStore.setText(product.getStore());
 
 

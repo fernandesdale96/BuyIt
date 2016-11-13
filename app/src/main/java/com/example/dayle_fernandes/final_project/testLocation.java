@@ -122,11 +122,12 @@ public class testLocation implements Serializable{
         S11.add(s4);
         LatLng s5 = new LatLng(22.339457, 114.187642);
         S11.add(s5);
+
     }
 
     public LatLng nearestStore(ArrayList<LatLng> alist, LatLng cpos){
         float length = 100000;
-        LatLng apos = new LatLng(cpos.latitude,cpos.longitude);
+        LatLng apos = null;
 
         for(LatLng e: alist){
             Location a1 = new Location("");
@@ -139,7 +140,7 @@ public class testLocation implements Serializable{
 
             if(length > distance){
                 length = distance;
-                apos = new LatLng(e.latitude,e.longitude);
+                apos = e;
             }
         }
         return  apos;

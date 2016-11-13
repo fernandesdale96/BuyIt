@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             email_id = email.getText().toString();
             password = pass.getText().toString();
 
-            //TODO: Implement Authentication Logic
+
 
             new android.os.Handler().postDelayed(
                     new Runnable() {

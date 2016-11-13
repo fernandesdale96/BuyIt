@@ -14,10 +14,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import DB.ProductHandler;
@@ -57,16 +71,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         private Context ctx=null;
         OnSwipeTouchListener onSwipeTouchListener;
         ProductInfo p;
-      //  ProductHandler productHandler;
-
-
 
         public ViewHolder(final View view){
             super(view);
             ctx=view.getContext();
-         //   productHandler = new ProductHandler(ctx);
-         //   productHandler.open();
-
             pName = (TextView) view.findViewById(R.id.selected_prod_name);
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
             aDistance = (TextView) view.findViewById(R.id.product_distance);
@@ -93,7 +101,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                    // p.setStore(aStore.getText().toString());
                     st=aStore.getText().toString();
 
-                  //  add product to Basket activity
+                                       //  add product to Basket activity
                   //  String jsonStr="";
                   //  ServiceHandler sh = new ServiceHandler();
                   /*  List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -129,10 +137,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     b.putString("PROD_DIST",dist);
 
                     i.putExtras(b);
-                    //  f.putExtra(PROD_PRICE,price);
-                    //  i.putExtra(PROD_STORE,store);
-                    //  i.putExtra(PROD_PRICE,Double.toString(price));
-                    //  i.putExtra(PROD_DIST,Double.toString(dist));
                     view.getContext().startActivity(i);
 
                 }
@@ -169,12 +173,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             /**
              * Creating product
              */
-
+            @Override
             protected String doInBackground(String... args) {
+
                 String jsonStr="";
                 try {
-                    ServiceHandler sh = new ServiceHandler();
+                   ServiceHandler sh = new ServiceHandler();
                     // Building Parameters
+
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
                     params.add(new BasicNameValuePair("name", name));
                     params.add(new BasicNameValuePair("price", price));
@@ -182,23 +188,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     params.add(new BasicNameValuePair("location", location));
                     params.add(new BasicNameValuePair("distance", distance));
 
-                    // getting JSON Object
-                    // Note that create product url accepts POST method
-                    //  JSONObject json = jsonParser.makeHttpRequest(url_create_product,
-                    //          "POST", params);
-
+                    Log.d("Create Response", distance);
                     jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
-
-
-
                     // check log cat fro response
                     Log.d("Create Response", jsonStr.toString());
                 }catch(Exception e){
 
                 }
                 // check for success tag
-
-
                 return "success";
 
             }
@@ -206,7 +203,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             /**
              * After completing background task Dismiss the progress dialog
              **/
-            protected void onPostExecute(Void result) {
+            protected void onPostExecute(String result) {
                 // dismiss the dialog once done
 
                 // Dismiss the progress dialog
@@ -238,17 +235,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         String q = String.valueOf(m) + " KM";
         holder.aDistance.setText(q);
         holder.aStore.setText(product.getStore());
-
-
     }
 
     @Override
     public int getItemCount(){
         return inf.size();
-
     }
-
-
-
 
 }

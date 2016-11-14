@@ -3,6 +3,7 @@ package com.example.dayle_fernandes.final_project;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,9 +11,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,15 +27,22 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import static com.example.dayle_fernandes.final_project.R.id.test;
+import static com.example.dayle_fernandes.final_project.R.id.profile_image;
+import static com.example.dayle_fernandes.final_project.R.id.user;
+
 import static java.lang.Math.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.NameValuePair;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.dayle_fernandes.final_project.R;
-//import com.google.android.gms.analytics.ecommerce.Product;
+import com.google.android.gms.analytics.ecommerce.Product;
+import com.google.android.gms.vision.text.Text;
 
 import android.widget.Adapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -58,7 +67,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SimpleAdapter;
-
+import android.widget.TextView;
+import android.widget.TextView;
 import org.apache.http.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,9 +127,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, drawer, toolbar, com.example.dayle_fernandes.final_project.R.string.navigation_drawer_open, com.example.dayle_fernandes.final_project.R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        String email = LoginActivity.getEmail();
+        String name = LoginActivity.getName();
+        String profile = LoginActivity.getProfile();
 
         NavigationView navigationView = (NavigationView) findViewById(com.example.dayle_fernandes.final_project.R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View v = navigationView.getHeaderView(0);
+        TextView nav_user = (TextView) v.findViewById(user);
+        final ImageView user_profile = (ImageView) v.findViewById(profile_image);
+
+        if (name == null) {
+            nav_user.setText(email);
+        } else {
+            nav_user.setText(name);
+        }
+
+        if(profile != null) {
+            Glide.with(getApplicationContext()).load(profile).asBitmap().into(new BitmapImageViewTarget(user_profile) {
+                @Override
+                protected void setResource(Bitmap resource){
+                    RoundedBitmapDrawable circularBitmapDrawable =
+                            RoundedBitmapDrawableFactory.create(getApplicationContext().getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    user_profile.setImageDrawable(circularBitmapDrawable);
+                }
+            });
+        }
+
 
         aRecyclerView = (RecyclerView) findViewById(R.id.productlist_recyclerView);
         aRecyclerView.setHasFixedSize(true);
@@ -246,13 +281,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-
-
-
-
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(com.example.dayle_fernandes.final_project.R.id.drawer_layout);
@@ -294,9 +322,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == com.example.dayle_fernandes.final_project.R.id.nav_home) {
 
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_payment) {
-            //TODO: Add intent to add/edit payment options
+            Intent intent = new Intent(this,PaymentActivity.class);
+            startActivity(intent);
+
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_market) {
-            //TODO: Add intent to list of all markets
+
         } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {
             finish();
             System.exit(0);

@@ -122,7 +122,9 @@ public class AddProduct extends Activity {
 
                 // check log cat fro response
                 Log.d("Create Response", jsonStr.toString());
+            }catch(Exception e){
 
+            }
                 // check for success tag
                 {
                     int success = jsonStr.compareTo(TAG_SUCCESS);
@@ -139,10 +141,6 @@ public class AddProduct extends Activity {
                         // failed to create product
                     }
                 }
-
-            }catch(Exception e){
-
-            }
 
                 return null;
 

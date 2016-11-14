@@ -13,7 +13,7 @@
         <item
             android:id="@+id/nav_market"
             android:icon="@drawable/ic_market"
-            android:title="Markets" />
+            android:title="Basket" />
         <item
             android:id="@+id/nav_exit"
             android:icon="@drawable/ic_exit"

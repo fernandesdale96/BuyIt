@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -51,8 +50,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     String url_add_product = "http://10.0.2.2/FinalProject/add_basket_product.php";
     private ProgressDialog pDialog;
     private static final String TAG_SUCCESS = "success";
-    public String nm,st,pr,dis;
-   // public double pr,dis;
+    public String nm,pr,dis,st;
 
     //helper method to get ProductInfo object
     private ProductInfo getInfo(String name){
@@ -91,26 +89,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 }
 
                 public void onSwipeLeft() {
-                   HttpClient client = new DefaultHttpClient();
-                    String yourURL;
+
                     Toast.makeText(ctx, "Added to cart", Toast.LENGTH_SHORT).show();
                   //  p.setName(pName.getText().toString());
+                    nm=(pName.getText().toString());
+                   // p.setPrice(Double.parseDouble(pPrice.getText().toString()));
+                    pr=(pPrice.getText().toString());
+                   // p.setDistance(Double.parseDouble(aDistance.getText().toString()));
+                    dis=aDistance.getText().toString();
+                   // p.setStore(aStore.getText().toString());
+                    st=aStore.getText().toString();
 
-                        nm = (pName.getText().toString());
-                        // p.setPrice(Double.parseDouble(pPrice.getText().toString()));
-                        pr = (pPrice.getText().toString());
-                        pr=pr.replaceAll("[^\\d.]", "");
-                        // p.setDistance(Double.parseDouble(aDistance.getText().toString()));
-                        dis = (aDistance.getText().toString());
-                        dis=dis.replaceAll("[^\\d.]", "");
-                        // p.setStore(aStore.getText().toString());
-                        st = aStore.getText().toString();
-
-                        yourURL = "http://10.0.2.2/FinalProject/add_basket_product.php?name=" + nm + "&price=" + pr + "&distance=" + dis + "&location=" + st + "&description=x";
-                        Log.d("url: ",yourURL);
-
-
-                        new CreateNewProduct().execute(yourURL);
+                                       //  add product to Basket activity
+                  //  String jsonStr="";
+                  //  ServiceHandler sh = new ServiceHandler();
+                  /*  List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("name", pinfo.getName()));
+                    params.add(new BasicNameValuePair("price", Double.toString(pinfo.getPrice())));
+                    params.add(new BasicNameValuePair("description", pinfo.getName()));
+                    params.add(new BasicNameValuePair("location", pinfo.getStore()));
+                    params.add(new BasicNameValuePair("distance", Double.toString(pinfo.getDistance())));
+                    jsonStr=sh.makeServiceCall(url_add_product,ServiceHandler.POST,params); */
+                    new CreateNewProduct().execute();
 
 
                 }
@@ -146,11 +146,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
         class CreateNewProduct extends AsyncTask<String, String, String> {
 
-            String name=ViewHolder.this.pName.toString();
-            String price=ViewHolder.this.pPrice.toString();;
-            String location=ViewHolder.this.aStore.toString();;
-            String distance=ViewHolder.this.aDistance.toString();;
-            String description="x";
+            String name;
+            String price;
+            String location;
+            String distance;
+            String description;
             /**
              * Before starting background thread Show Progress Dialog
              */
@@ -162,11 +162,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 pDialog.setIndeterminate(false);
                 pDialog.setCancelable(true);
                 pDialog.show();
-                //name =nm;// p.getName();
-               // price =pr;// Double.toString(p.getPrice());
-               // location=st ;// p.getStore();
-               // distance=dis;//Double.toString(p.getDistance());
-               // description = "yellow";// p.getName();
+                name =nm;// p.getName();
+                price =pr;// Double.toString(p.getPrice());
+                location=st ;// p.getStore();
+                distance=dis;//Double.toString(p.getDistance());
+                description = "yellow";// p.getName();
             }
 
             /**
@@ -177,20 +177,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
                 String jsonStr="";
                 try {
-                    DefaultHttpClient client = new DefaultHttpClient();
-                    HttpResponse res = client.execute(new HttpGet(args[0]));
-                 //  ServiceHandler sh = new ServiceHandler();
+                   ServiceHandler sh = new ServiceHandler();
                     // Building Parameters
 
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("name", "banana"));
-                    params.add(new BasicNameValuePair("price", "banana"));
-                    params.add(new BasicNameValuePair("location", "banana"));
-                    params.add(new BasicNameValuePair("distance", "banana"));
-                    params.add(new BasicNameValuePair("description", "banana"));
+                    params.add(new BasicNameValuePair("name", name));
+                    params.add(new BasicNameValuePair("price", price));
+                    params.add(new BasicNameValuePair("description", description));
+                    params.add(new BasicNameValuePair("location", location));
+                    params.add(new BasicNameValuePair("distance", distance));
 
                     Log.d("Create Response", distance);
-                   // jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
+                    jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
                     // check log cat fro response
                     Log.d("Create Response", jsonStr.toString());
                 }catch(Exception e){

@@ -24,7 +24,8 @@ public class ViewAddedProducts extends ListActivity{
         setContentView(R.layout.activity_view_added_products);
         productHandler = new ProductHandler(ViewAddedProducts.this);
         productHandler.open();
-        products = testProductList.getProducts();
+        testProductList atestProductList = testProductList.getInstance();
+        products = atestProductList.getProducts();
         productHandler.close();
         ArrayAdapter<ProductInfo> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, products);

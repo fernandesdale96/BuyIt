@@ -15,6 +15,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,7 +29,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import static com.example.dayle_fernandes.final_project.R.id.profile_image;
+import static com.example.dayle_fernandes.final_project.R.id.start;
 import static com.example.dayle_fernandes.final_project.R.id.user;
+import android.util.Log;
 
 import static java.lang.Math.*;
 import org.apache.http.client.methods.HttpGet;
@@ -325,9 +328,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(this,PaymentActivity.class);
             startActivity(intent);
 
-        } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_market) {
+        } else if (id == R.id.nav_basket) {
+            Intent intent = new Intent(this,BasketActivity.class);
+            startActivity(intent);
 
-        } else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {
+        }else if (id == R.id.add_product){
+            Intent i = new Intent(this,AddProduct.class);
+            startActivity(i);
+
+        }else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {
             finish();
             System.exit(0);
         }

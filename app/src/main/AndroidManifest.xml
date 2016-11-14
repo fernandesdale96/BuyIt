@@ -36,8 +36,7 @@
 
         </activity>
 
-        <activity android:name=".ProductLocation"></activity>
-        <activity android:name=".MenuActivity"></activity>
+
         <activity android:name=".AddProduct"></activity>
         <activity android:name=".BasketActivity"></activity>
         <activity android:name=".ViewAddedProducts"></activity>

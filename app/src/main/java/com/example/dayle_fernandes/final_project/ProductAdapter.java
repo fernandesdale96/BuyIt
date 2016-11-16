@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -42,22 +45,22 @@ import DB.ProductHandler;
  */
 
 
-
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder>  {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
 
     private ArrayList<ProductInfo> inf;
-    ProductAdapter selfRef=this;
+    ProductAdapter selfRef = this;
     String url_add_product = "http://10.0.2.2/FinalProject/add_basket_product.php";
     private ProgressDialog pDialog;
     private static final String TAG_SUCCESS = "success";
-    public String nm,pr,dis,st;
+
+    public String nm, st, pr, dis;
 
     //helper method to get ProductInfo object
-    private ProductInfo getInfo(String name){
-        ProductInfo pinfo=null;
-        for(ProductInfo x:inf){
-            if(x.getName().equalsIgnoreCase(name))
-                pinfo=x;
+    private ProductInfo getInfo(String name) {
+        ProductInfo pinfo = null;
+        for (ProductInfo x : inf) {
+            if (x.getName().equalsIgnoreCase(name))
+                pinfo = x;
         }
         return pinfo;
     }
@@ -68,18 +71,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView pPrice;
         TextView aDistance;
         TextView aStore;
-        private Context ctx=null;
+        private Context ctx = null;
         OnSwipeTouchListener onSwipeTouchListener;
         ProductInfo p;
 
-        public ViewHolder(final View view){
+        public ViewHolder(final View view) {
             super(view);
-            ctx=view.getContext();
+            ctx = view.getContext();
             pName = (TextView) view.findViewById(R.id.selected_prod_name);
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
             aStore = (TextView) view.findViewById(R.id.product_store);
 
-           onSwipeTouchListener=(new OnSwipeTouchListener(ctx) {
+            onSwipeTouchListener = (new OnSwipeTouchListener(ctx) {
                 public void onSwipeTop() {
                     Toast.makeText(ctx, "top", Toast.LENGTH_SHORT).show();
                 }
@@ -89,31 +92,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 }
 
                 public void onSwipeLeft() {
-
+                    HttpClient client = new DefaultHttpClient();
+                    String yourURL;
                     Toast.makeText(ctx, "Added to cart", Toast.LENGTH_SHORT).show();
-                  //  p.setName(pName.getText().toString());
-                    nm=(pName.getText().toString());
-                   // p.setPrice(Double.parseDouble(pPrice.getText().toString()));
-                    pr=(pPrice.getText().toString());
-                   // p.setDistance(Double.parseDouble(aDistance.getText().toString()));
-                    dis=aDistance.getText().toString();
-                   // p.setStore(aStore.getText().toString());
-                    st=aStore.getText().toString();
+                    //  p.setName(pName.getText().toString());
+                    nm = (pName.getText().toString());
+                    // p.setPrice(Double.parseDouble(pPrice.getText().toString()));
+                    pr = (pPrice.getText().toString());
+                    pr = pr.replaceAll("[^\\d.]", "");
+                    // p.setDistance(Double.parseDouble(aDistance.getText().toString()));
+                    dis = (aDistance.getText().toString());
+                    dis = dis.replaceAll("[^\\d.]", "");
+                    // p.setStore(aStore.getText().toString());
+                    st = aStore.getText().toString();
 
-                                       //  add product to Basket activity
-                  //  String jsonStr="";
-                  //  ServiceHandler sh = new ServiceHandler();
-                  /*  List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("name", pinfo.getName()));
-                    params.add(new BasicNameValuePair("price", Double.toString(pinfo.getPrice())));
-                    params.add(new BasicNameValuePair("description", pinfo.getName()));
-                    params.add(new BasicNameValuePair("location", pinfo.getStore()));
-                    params.add(new BasicNameValuePair("distance", Double.toString(pinfo.getDistance())));
-                    jsonStr=sh.makeServiceCall(url_add_product,ServiceHandler.POST,params); */
-                    new CreateNewProduct().execute();
+                    yourURL = "http://10.0.2.2/FinalProject/add_basket_product.php?name=" + nm + "&price=" + pr + "&distance=" + dis + "&location=" + st + "&description=x";
+                    Log.d("url: ", yourURL);
+
+                    new CreateNewProduct().execute(yourURL);
 
 
                 }
+
                 public void onSwipeBottom() {
                     Toast.makeText(ctx, "bottom", Toast.LENGTH_SHORT).show();
                 }
@@ -122,17 +122,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 public void onClick() {
                     super.onClick();
                     Intent i;
-                    ProductInfo pinfo= getInfo(pName.getText().toString());
+                    ProductInfo pinfo = getInfo(pName.getText().toString());
                     //Toast.makeText(view.getContext(),pName.getText().toString(),Toast.LENGTH_LONG).show();
-                    String name=pinfo.getName();
-                    String price=Double.toString(pinfo.getPrice());
-                    String store=pinfo.getStore();
+                    String name = pinfo.getName();
+                    String price = Double.toString(pinfo.getPrice());
+                    String store = pinfo.getStore();
 
-                    i=new Intent(ctx,LocationActivity.class);
-                    Bundle b=new Bundle();
-                    b.putString("PROD_NAME",name);
-                    b.putString("PROD_PRICE",price);
-                    b.putString("PROD_STORE",store);
+                    i = new Intent(ctx, LocationActivity.class);
+                    Bundle b = new Bundle();
+                    b.putString("PROD_NAME", name);
+                    b.putString("PROD_PRICE", price);
+                    b.putString("PROD_STORE", store);
 
 
                     i.putExtras(b);
@@ -142,15 +142,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             });
 
             //To set onClick Listener for each item which is held by ViewHolder
-        view.setOnTouchListener(onSwipeTouchListener);
-    }
+            view.setOnTouchListener(onSwipeTouchListener);
+        }
+
         class CreateNewProduct extends AsyncTask<String, String, String> {
 
-            String name;
-            String price;
-            String location;
-            String distance;
-            String description;
+            String name=ViewHolder.this.pName.toString();
+                       String price=ViewHolder.this.pPrice.toString();;
+                        String location=ViewHolder.this.aStore.toString();;
+                       String distance=ViewHolder.this.aDistance.toString();;
+                        String description="x";
+
             /**
              * Before starting background thread Show Progress Dialog
              */
@@ -162,11 +164,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 pDialog.setIndeterminate(false);
                 pDialog.setCancelable(true);
                 pDialog.show();
-                name =nm;// p.getName();
-                price =pr;// Double.toString(p.getPrice());
-                location=st ;// p.getStore();
-                distance=dis;//Double.toString(p.getDistance());
-                description = "yellow";// p.getName();
+
             }
 
             /**
@@ -175,23 +173,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             @Override
             protected String doInBackground(String... args) {
 
-                String jsonStr="";
+                String jsonStr = "";
                 try {
-                   ServiceHandler sh = new ServiceHandler();
+                    DefaultHttpClient client = new DefaultHttpClient();
+                                        HttpResponse res = client.execute(new HttpGet(args[0]));
                     // Building Parameters
 
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("name", name));
-                    params.add(new BasicNameValuePair("price", price));
-                    params.add(new BasicNameValuePair("description", description));
-                    params.add(new BasicNameValuePair("location", location));
-                    params.add(new BasicNameValuePair("distance", distance));
+                    params.add(new BasicNameValuePair("name", "banana"));
+                                        params.add(new BasicNameValuePair("price", "banana"));
+                                        params.add(new BasicNameValuePair("location", "banana"));
+                                        params.add(new BasicNameValuePair("distance", "banana"));
+                                        params.add(new BasicNameValuePair("description", "banana"));
 
                     Log.d("Create Response", distance);
-                    jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
+                    //jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
                     // check log cat fro response
                     Log.d("Create Response", jsonStr.toString());
-                }catch(Exception e){
+                } catch (Exception e) {
 
                 }
                 // check for success tag
@@ -213,18 +212,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     }
 
-    public ProductAdapter(ArrayList<ProductInfo> prinfo){
+    public ProductAdapter(ArrayList<ProductInfo> prinfo) {
         this.inf = prinfo;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_card,parent,false);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_card, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position){
+    public void onBindViewHolder(ViewHolder holder, int position) {
         ProductInfo product = inf.get(position);
         holder.pName.setText(product.getName());
         double n = product.getPrice();
@@ -234,7 +233,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return inf.size();
     }
 

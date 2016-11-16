@@ -1,5 +1,6 @@
 package com.example.dayle_fernandes.final_project;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -14,16 +15,27 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.cast.framework.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.vision.text.Text;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.dayle_fernandes.final_project.R.id.btn_login;
@@ -53,6 +65,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private static String email_id;
     private String password;
     private boolean google_flag = false;
+    private SessionManager session;
+    private SQLiteHandler db;
+
+    private static String url_log_in = "http://10.0.2.2/FinalProject/android_login.php";
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
 
     public static String getName(){
@@ -81,6 +98,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btngoogle.setOnClickListener(this);
         btnlogin.setOnClickListener(this);
         signup.setOnClickListener(this);
+
+        db = new SQLiteHandler(getApplicationContext());
+        session = new SessionManager(getApplicationContext());
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setCancelable(false);
+
+
+
+
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -123,29 +150,99 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         btnlogin.setEnabled(false);
 
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setMessage("Authenticating...");
-            mProgressDialog.show();
+        String email_text = email.getText().toString().trim();
+        String password_text = pass.getText().toString().trim();
 
-            email_id = email.getText().toString();
-            password = pass.getText().toString();
+        checkLogin(email_text,password_text);
 
-
-
-            new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            onLoginSuccess();
-                            mProgressDialog.dismiss();
-                        }
-                    }, 3000);
-        }
 
 
     }
+
+    private void checkLogin(final String email, final String pass){
+        String tag_string_req = "req_login";
+
+
+
+        //mProgressDialog.setMessage("Loggig in...");
+        //showProgressDialog();
+
+        StringRequest strReq = new StringRequest(Request.Method.POST, url_log_in, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Login Response: " + response.toString());
+                hideDialog();
+
+                try {
+                    JSONObject jso = new JSONObject(response);
+                    boolean error = jso.getBoolean("error");
+
+                    if(!error){
+                        session.setLogin(true);
+
+                        String uid = jso.getString("uid");
+
+                        JSONObject user = jso.getJSONObject("user");
+                        String name = user.getString("name");
+                        String email = user.getString("email");
+                        email_id = email;
+                        String created_at = user.getString("created_at");
+
+                        db.addUser(name,email,uid,created_at);
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    }else{
+                        String errormsg = jso.getString("error_msg");
+                        Toast.makeText(getApplicationContext(),
+                                errormsg, Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Login Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                // Posting parameters to login url
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("email", email);
+                params.put("password", password);
+
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+    private void showDialog() {
+        if (!mProgressDialog.isShowing())
+            mProgressDialog.show();
+    }
+
+    private void hideDialog() {
+        if (mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
+    }
+
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
@@ -176,12 +273,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return valid;
     }
 
-    public void onLoginSuccess() {
-        btnlogin.setEnabled(true);
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
 
 
     @Override
@@ -193,11 +284,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 handleSignInResult(result);
 
-            }
-        } else {
-            if (requestCode == REQUEST_SIGNIN) {
-                //TODO: Add Login here
-                this.finish();
             }
         }
     }

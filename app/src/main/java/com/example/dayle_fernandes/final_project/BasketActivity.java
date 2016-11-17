@@ -37,7 +37,7 @@ public class BasketActivity extends AppCompatActivity{
     // JSONParser jParser = new JSONParser();
     ArrayList<ProductInfo> productsList;
     // url to get all products list
-    private static String url_all_products = "http://10.0.2.2/FinalProject/show_basket_products.php";
+    private static String url_all_products = "http://192.168.0.102/FinalProject/show_basket_products.php";
 
     private ProgressDialog pDialog;
     private static final String PRODUCTS = "products";

@@ -9,16 +9,14 @@
 $response = array();
  
 // check for required fields
-if (isset($_POST['name']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['location']) && isset($_POST['distance'])) {
+if (isset($_GET['name']) && isset($_GET['price']) && isset($_GET['description']) && isset($_GET['location']) && isset($_GET['distance'])) {
  
-    $name = $_POST['name'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
-    $location = $_POST['location'];
-    $distance = $_POST['distance'];
-    $created_at = $_POST['created_at'];
-    $updated_at = $_POST['updated_at'];
- 
+    $name = $_GET['name'];
+    $price = $_GET['price'];
+    $description = $_GET['description'];
+    $location = $_GET['location'];
+    $distance = $_GET['distance'];
+   
     // include db connect class
     require_once __DIR__ . '/db_connect.php';
  

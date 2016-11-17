@@ -4,11 +4,13 @@
  * A class file to connect to database
  */
 class DB_CONNECT {
- 
+    
+    private $connect;
+    
     // constructor
     function __construct() {
         // connecting to database
-        $this->connect();
+        $this->connect = $this->connection();
     }
  
     // destructor
@@ -20,7 +22,7 @@ class DB_CONNECT {
     /**
      * Function to connect with database
      */
-    function connect() {
+    function connection() {
         // import database connection variables
         require_once __DIR__ . '/db_config.php';
  
@@ -40,6 +42,10 @@ class DB_CONNECT {
     function close() {
         // closing db connection
         mysql_close();
+    }
+
+    public function getDB(){
+        return $this->connect;
     }
  
 }

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "946420794530",
+    "project_id": "firebase-buyit"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946420794530:android:e1e9bc9e4bbc1662",
+        "android_client_info": {
+          "package_name": "com.example.dayle_fernandes.final_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946420794530-h0fg78b0es1rn4vkb5ipqmk8per09rkr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dayle_fernandes.final_project",
+            "certificate_hash": "58D9160C2BDF1E677EDA986DC0E9875D0128D09D"
+          }
+        },
+        {
+          "client_id": "946420794530-mmauud2da8qnncodfkj1dqin7iih41v5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdgH3M3Eq6L07YEdsyca2rw1piyQDpYrc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

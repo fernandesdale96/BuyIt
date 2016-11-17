@@ -4,6 +4,7 @@ package com.example.dayle_fernandes.final_project;
  * Created by aksharma2 on 05-11-2016.
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +17,16 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -34,6 +39,8 @@ public class AddProduct extends Activity {
     private static String url_create_product = "http://10.0.2.2/FinalProject/create_product.php";
 
     private static final String TAG_SUCCESS = "success";
+    private static final int CAMERA_REQUEST = 1888;
+    private ImageView imageView;
 
     //JSONParser jsonParser = new JSONParser();
     EditText inputName;
@@ -58,6 +65,16 @@ public class AddProduct extends Activity {
 
         // Create button
         Button btnCreateProduct = (Button) findViewById(R.id.btnCreateProduct);
+        Button photoButton = (Button) this.findViewById(R.id.btnCamera);
+
+        photoButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            }
+        });
 
         // button click event
         btnCreateProduct.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +87,32 @@ public class AddProduct extends Activity {
 
 
         });
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+
+        }
+    }
+
+    //helper function
+    private static String encodeTobase64(Bitmap image)
+    {
+        Bitmap immagex=image;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        immagex.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String imageEncoded = Base64.encodeToString(b,Base64.DEFAULT);
+        return imageEncoded;
+    }
+
+    //helper function
+    private Bitmap decodeBase64(String input)
+    {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
     class CreateNewProduct extends AsyncTask<String, String, String>  {

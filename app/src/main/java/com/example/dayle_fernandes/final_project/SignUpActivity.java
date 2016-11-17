@@ -2,6 +2,7 @@ package com.example.dayle_fernandes.final_project;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,13 +21,27 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.SignInButton;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
+
+import static android.R.attr.name;
+import static android.R.attr.password;
 import static android.R.id.input;
 
 
@@ -41,15 +56,16 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView signin_link;
     private ProgressDialog mProgressDialog;
     private SessionManager session;
-    private SQLiteHandler db;
 
-    private static String url_register = "http://10.0.2.2/FinalProject/android_register.php";
+    String uname, upass, uemail;
+    SignUpActivity selfref = this;
+
+    private static String url_register = "http://10.0.2.2/FinalProject/register.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
 
 
         mProgressDialog = new ProgressDialog(this);
@@ -64,14 +80,11 @@ public class SignUpActivity extends AppCompatActivity {
         signin_link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this,LoginActivity.class);
+                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
-
-
-
 
 
         signup_button.setOnClickListener(new View.OnClickListener() {
@@ -93,104 +106,126 @@ public class SignUpActivity extends AppCompatActivity {
 
         signup_button.setEnabled(false);
 
-        String name = user_name.getText().toString();
-        String email = user_email.getText().toString();
-        String password = user_password.getText().toString();
+        uname = user_name.getText().toString();
+        uemail = user_email.getText().toString();
+        upass = user_password.getText().toString();
+        HttpClient client = new DefaultHttpClient();
+        //String my_url;
+        //Toast.makeText(getApplicationContext(), "Trying to sign in", Toast.LENGTH_LONG).show();
 
-        if (!name.isEmpty() && !email.isEmpty() && !password.isEmpty()) {
-            registerUser(name, email, password);
+        //my_url = "http://10.0.2.2/FinalProject/android_register.php?name=" + uname + "&email" + uemail + "&password" + upass;
+        //Log.d("url: ",my_url);
+
+
+        if (!uname.isEmpty() && !uemail.isEmpty() && !upass.isEmpty()) {
+
+            new RegisterUser().execute(uname,uemail,upass);
+
+            /*RequestParams rp = new RequestParams();
+            rp.add("username", uname);
+            rp.add("password", upass);
+            rp.add("email", uemail);
+
+            Log.i("Running Request", uemail + " " + upass);
+
+            RESTClient.post("register.php", rp, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+
+                    try {
+                        String reqResult = response.getString("success");
+                        if (reqResult.equals("true")) {
+                            signup_button.setEnabled(true);
+                            Intent i = new Intent(SignUpActivity.this, LoginActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onSuccess: " + e.getStackTrace().toString());
+                    }
+
+                }
+            });*/
+
         } else {
             Toast.makeText(getApplicationContext(),
                     "Please enter your details!", Toast.LENGTH_LONG)
                     .show();
+            signup_button.setEnabled(true);
         }
 
 
-
-
     }
 
-    private void registerUser(final String name, final String email,
-                              final String password) {
-        // Tag used to cancel the request
-        String tag_string_req = "req_register";
+    class RegisterUser extends AsyncTask<String,String,String>{
 
-        mProgressDialog.setMessage("Registering ...");
-        showDialog();
 
-        StringRequest strReq = new StringRequest(Request.Method.POST,
-                url_register, new Response.Listener<String>() {
+        //Dialog before starting background thread
 
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "Register Response: " + response.toString());
-                hideDialog();
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+            mProgressDialog.setMessage("Creating Account");
+            mProgressDialog.setIndeterminate(false);
+            showDialog();
+        }
 
-                try {
-                    JSONObject jObj = new JSONObject(response);
-                    boolean error = jObj.getBoolean("error");
-                    if (!error) {
-                        // User successfully stored in MySQL
-                        // Now store the user in sqlite
-                        String uid = jObj.getString("uid");
+        @Override
+        protected String doInBackground(String... args){
 
-                        JSONObject user = jObj.getJSONObject("user");
-                        String aname = user.getString("name");
-                        String aemail = user.getString("email");
-                        String acreated_at = user
-                                .getString("created_at");
+            String aemail = args[1];
+            String auname = args[0];
+            String upass = args[2];
 
-                        // Inserting row in users table
-                        db.addUser(aname, aemail, uid, acreated_at);
+            String jsonStr="";
 
-                        Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
-                        // Launch login activity
-                        Intent intent = new Intent(
-                                SignUpActivity.this,
-                                LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
+            try {
+                ServiceHandler sh = new ServiceHandler();
 
-                        // Error occurred in registration. Get the error
-                        // message
-                        String errorMsg = jObj.getString("error_msg");
-                        Toast.makeText(getApplicationContext(),
-                                errorMsg, Toast.LENGTH_LONG).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("name",auname));
+                params.add(new BasicNameValuePair("email",aemail));
+                params.add(new BasicNameValuePair("password",upass));
+
+                jsonStr = sh.makeServiceCall(url_register,ServiceHandler.POST,params);
+
+                Log.d("Register Response",jsonStr.toString());
+
+
+
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            {
+                int success = jsonStr.compareTo("success");
+                if(success==0){
+                    Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(i);
+                    finish();
+
                 }
-
+                else{
+                    Toast.makeText(getApplicationContext(), "User already exists, Please choose a different Email", Toast.LENGTH_SHORT).show();
+                }
             }
-        }, new Response.ErrorListener() {
+            return null;
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Registration Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        }) {
+        }
 
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting params to register url
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("name", name);
-                params.put("email", email);
-                params.put("password", password);
-
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+        @Override
+        protected void onPostExecute(String result){
+            selfref.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
     }
+
 
     private void showDialog() {
         if (!mProgressDialog.isShowing())
@@ -236,15 +271,13 @@ public class SignUpActivity extends AppCompatActivity {
         } else {
             user_password.setError(null);
         }
-        if(pwd_confirm.isEmpty() || pwd_confirm.length() < 4 || pwd_confirm.length() > 10){
+        if (pwd_confirm.isEmpty() || pwd_confirm.length() < 4 || pwd_confirm.length() > 10) {
             password_confirm.setError("between 4 and 10 alphanumeric characters");
             valid = false;
-        }
-        else if(!pwd_confirm.matches(password)){
+        } else if (!pwd_confirm.matches(password)) {
             password_confirm.setError("Passwords do not match");
             valid = false;
-        }
-        else{
+        } else {
             password_confirm.setError(null);
         }
 

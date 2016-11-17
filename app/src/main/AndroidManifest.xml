@@ -20,7 +20,7 @@
         android:value="AIzaSyDKymeBXNeiFWY5jRUejv6zItpmr2MVyQ0" />
 
     <application
-        android:name=".AppController"
+
         android:allowBackup="true"
         android:icon="@drawable/ic_icon"
         android:label="@string/app_name"

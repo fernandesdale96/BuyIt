@@ -42,7 +42,7 @@ public class AddProduct extends Activity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
 
-    //JSONParser jsonParser = new JSONParser();
+
     EditText inputName;
     EditText inputPrice;
     EditText inputDesc;

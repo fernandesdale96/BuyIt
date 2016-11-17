@@ -86,10 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RecyclerView.Adapter aAdapter;
     testProductList list;
     MainActivity selfRef=this;
-   // JSONParser jParser = new JSONParser();
+
     ArrayList<ProductInfo> productsList;
     // url to get all products list
-    private static String url_all_products = "http://192.168.0.102/FinalProject/get_all_products.php";
+    private static String url_all_products = "http://10.0.2.2/FinalProject/get_all_products.php";
 
     private ProgressDialog pDialog;
     private static final String PRODUCTS = "products";
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //new LoadAllProducts().execute();
 
         // Creating JSON Parser object
-        //JSONParser jParser = new JSONParser();
+
         //aAdapter = new ProductAdapter(list.getProducts());
 
        // aRecyclerView.setAdapter(aAdapter);

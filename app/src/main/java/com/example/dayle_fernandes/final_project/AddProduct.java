@@ -35,7 +35,7 @@ public class AddProduct extends Activity {
 
     private static final String TAG_SUCCESS = "success";
 
-    //JSONParser jsonParser = new JSONParser();
+
     EditText inputName;
     EditText inputPrice;
     EditText inputDesc;

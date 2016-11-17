@@ -176,16 +176,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 String jsonStr = "";
                 try {
                     DefaultHttpClient client = new DefaultHttpClient();
-                                        HttpResponse res = client.execute(new HttpGet(args[0]));
+                    HttpResponse res = client.execute(new HttpGet(args[0]));
                     // Building Parameters
-
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair("name", "banana"));
-                                        params.add(new BasicNameValuePair("price", "banana"));
-                                        params.add(new BasicNameValuePair("location", "banana"));
-                                        params.add(new BasicNameValuePair("distance", "banana"));
-                                        params.add(new BasicNameValuePair("description", "banana"));
-
                     Log.d("Create Response", distance);
                     //jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
                     // check log cat fro response

@@ -66,7 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String password;
     private boolean google_flag = false;
     private SessionManager session;
-    private SQLiteHandler db;
+
 
     private static String url_log_in = "http://10.0.2.2/FinalProject/android_login.php";
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnlogin.setOnClickListener(this);
         signup.setOnClickListener(this);
 
-        db = new SQLiteHandler(getApplicationContext());
+
         session = new SessionManager(getApplicationContext());
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
@@ -116,6 +116,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
 
     }
+
+
+
+
+
 
     private void google_login() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -188,7 +193,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         email_id = email;
                         String created_at = user.getString("created_at");
 
-                        db.addUser(name,email,uid,created_at);
+
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
@@ -230,7 +235,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         };
 
         // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
 
     private void showDialog() {
@@ -255,7 +259,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email_text = email.getText().toString();
         String password_text = pass.getText().toString();
 
-        if(email_text.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(email_text).matches()){
+        if(email_text.isEmpty() /*|| Patterns.EMAIL_ADDRESS.matcher(email_text).matches()*/){
             email.setError("Please Enter a Valid Email ID");
             valid = false;
         }
@@ -293,7 +297,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         moveTaskToBack(true);
     }
 
-    @Override
+    /*@Override
     public void onStart() {
         super.onStart();
 
@@ -311,7 +315,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             });
         }
-    }
+    }*/
 
     private void showProgressDialog() {
         if (mProgressDialog == null) {

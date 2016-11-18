@@ -32,6 +32,9 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.example.dayle_fernandes.final_project.R.id.btnCreateProduct;
+
 public class AddProduct extends Activity {
 
     private ProgressDialog pDialog;
@@ -41,6 +44,10 @@ public class AddProduct extends Activity {
     private static final String TAG_SUCCESS = "success";
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
+    private String imageString;
+    private Bitmap bmap;
+
+
 
 
     EditText inputName;
@@ -62,6 +69,12 @@ public class AddProduct extends Activity {
         inputDesc = (EditText) findViewById(R.id.inputDesc);
         inputLocation = (EditText) findViewById(R.id.inputLocation);
         inputDistance = (EditText) findViewById(R.id.inputDistance);
+        imageView = (ImageView) findViewById(R.id.imageView1);
+        imageView.setImageResource(R.drawable.ic_action_search);
+        imageView.buildDrawingCache();
+        bmap = imageView.getDrawingCache();
+        imageString = encodeTobase64(bmap);
+
 
         // Create button
         Button btnCreateProduct = (Button) findViewById(R.id.btnCreateProduct);
@@ -82,7 +95,7 @@ public class AddProduct extends Activity {
             @Override
             public void onClick(View view) {
                 // creating new product in background thread
-                new CreateNewProduct().execute();
+                new CreateNewProduct().execute(imageString);
             }
 
 
@@ -90,15 +103,21 @@ public class AddProduct extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Bitmap photo = null;
+
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
+            photo = (Bitmap) data.getExtras().get("data");
+
 
         }
+        imageView.setImageBitmap(photo);
+        imageView.buildDrawingCache();
+        bmap = imageView.getDrawingCache();
+        imageString = AddProduct.encodeTobase64(bmap);
     }
 
     //helper function
-    private static String encodeTobase64(Bitmap image)
+    public static String encodeTobase64(Bitmap image)
     {
         Bitmap immagex=image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -109,7 +128,7 @@ public class AddProduct extends Activity {
     }
 
     //helper function
-    private Bitmap decodeBase64(String input)
+    public static Bitmap decodeBase64(String input)
     {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
@@ -149,12 +168,14 @@ public class AddProduct extends Activity {
             try {
                 ServiceHandler sh = new ServiceHandler();
                 // Building Parameters
+                String image=args[0];
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("name", name));
                 params.add(new BasicNameValuePair("price", price));
                 params.add(new BasicNameValuePair("description", description));
                 params.add(new BasicNameValuePair("location", location));
                 params.add(new BasicNameValuePair("distance", distance));
+                params.add(new BasicNameValuePair("image",image));
 
                 // getting JSON Object
                 // Note that create product url accepts POST method

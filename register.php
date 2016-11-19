@@ -3,6 +3,7 @@
     
    
 	$connection_r = mysqli_connect("localhost","root","","products");
+	header('Content-Type: application/json');
 	/*require_once __DIR__ . '/db_connect.php';
  
     // connecting to db
@@ -10,12 +11,12 @@
 
     
     
-	$uname = "Dayle";
-	$uemail = "abc@xyz.com";
-	$upass = "Dayle1996";
+	$uname = "";
+	$uemail = "";
+	$upass = "";
 
-	/*if(isset($_POST['username'])){
-		$uname = $_POST['username'];
+	if(isset($_POST['name'])){
+		$uname = $_POST['name'];
 	}
 
 	if(isset($_POST['password'])){
@@ -24,7 +25,7 @@
 
 	if(isset($_POST['email'])){
 		$uemail = $_POST['email'];
-	}*/
+	}
 
 	$hashed_password = md5($upass);
 
@@ -56,11 +57,14 @@
 
 	//Helper Functions for Registration
 
-    function loginExists($email, $password,$connection_r){
-    	$query = "SELECT * FROM users WHERE email = $email AND password = $password";
-    	$result_m = mysqli_query($connection_r,$query);
+    /*function loginExists($email, $password,$connection_r){
+    	$result_m = mysqli_query($connection_r,"SELECT * FROM users WHERE email = '$email'");
+    	$row = mysqli_fetch_array($result_m);
+    	$num = count($row);
 
-    	if(mysqli_num_rows($result_m) ==0){
+    	
+
+    	if($num == 0){
     		return false;
     	}
 
@@ -68,7 +72,7 @@
     	return true;
 
     	
-    }
+    }*/
 
     function isValidEmail($email){
     	return filter_var($email,FILTER_VALIDATE_EMAIL) !== false;
@@ -76,10 +80,20 @@
 
     function registerUser($username,$password,$email,$connection_r){
 
-    	$exists = loginExists($username,$password,$connection_r);
+    	$exists=false;
+
+    	$result_m = mysqli_query($connection_r,"SELECT * FROM users WHERE email = '$email'");
+
+    	$temp_array = mysqli_fetch_array($result_m);
+    	$num = count($temp_array);
+
+    	if($num>0){
+    		$exists = true;
+    	}
+
 
     	if($exists){
-    		$json['success'] = 0;
+    		$json['success'] = false;
     		$json['message'] = "Error during registration, User already exists";
     	}
 
@@ -91,9 +105,10 @@
     			$inserted = mysqli_query($connection_r,$query);
 
     			if($inserted == 1){
-    				$json['success'] = 1;
+    				$json['success'] = true;
     				$json['message'] = "User Registered Sucessfully";
-    				$result = mysqli_query($connection_r,"SELECT * FROM users WHERE email = '$email' AND password = '$password'");
+    				
+    				/*$result = mysqli_query($connection_r,"SELECT * FROM users WHERE email = '$email' AND password = '$password'");
     				$row = mysqli_fetch_array($result);
     				$response["users"] = array();
     				$users = array();
@@ -105,10 +120,10 @@
 
             		array_push($response["users"], $users);
 
-    				echo json_encode($response);
+    				echo json_encode($response);*/
     			}
     			else{
-    				$json['success'] = 2;
+    				$json['success'] = false;
     				$json['message'] = "Error during registration. User already exists";
     			}
     			mysqli_close($connection_r);
@@ -116,7 +131,7 @@
 
     		}
     		else{
-    			$json['success'] = 3;
+    			$json['success'] = false;
     			$json['message'] = "Error in registering. Email Address is not valid.";
     		}
     	}

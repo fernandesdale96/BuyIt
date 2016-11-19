@@ -9,14 +9,16 @@
 $response = array();
  
 // check for required fields
-if (isset($_GET['name']) && isset($_GET['price']) && isset($_GET['description']) && isset($_GET['location']) && isset($_GET['distance'])) {
+if (isset($_GET['name']) && isset($_GET['price']) && isset($_GET['description']) && isset($_GET['location']) {
  
     $name = $_GET['name'];
     $price = $_GET['price'];
     $description = $_GET['description'];
     $location = $_GET['location'];
-    $distance = $_GET['distance'];
    
+   // $created_at = $_GET['created_at'];
+    //$updated_at = $_GET ['updated_at'];
+ 
     // include db connect class
     require_once __DIR__ . '/db_connect.php';
  
@@ -24,7 +26,7 @@ if (isset($_GET['name']) && isset($_GET['price']) && isset($_GET['description'])
     $db = new DB_CONNECT();
  
     // mysql inserting a new row
-    $result = mysql_query("INSERT INTO basket(name, price, location, distance, description) VALUES('$name', '$price', '$location', '$distance', '$description')");
+    $result = mysql_query("INSERT INTO basket(name, price, location, description) VALUES('$name', '$price', '$location', '$description')");
  
     // check if row inserted or not
     if ($result) {

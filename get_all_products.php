@@ -31,6 +31,7 @@ if (mysql_num_rows($result) > 0) {
             $product["location"] = $row["location"];
             $product["distance"] = $row["distance"];
             $product["description"] = $row["description"];
+            $product["image"] = $row["image"];
             $product["created_at"] = $row["created_at"];
             $product["updated_at"] = $row["updated_at"];
  

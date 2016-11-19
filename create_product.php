@@ -9,13 +9,14 @@
 $response = array();
  
 // check for required fields
-if (isset($_POST['name']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['location']) && isset($_POST['distance'])) {
+if (isset($_POST['name']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['location']) && isset($_POST['distance']) && isset($_POST['image'])) {
  
     $name = $_POST['name'];
     $price = $_POST['price'];
     $description = $_POST['description'];
     $location = $_POST['location'];
     $distance = $_POST['distance'];
+    $image = $_POST['image'];
     $created_at = $_POST['created_at'];
     $updated_at = $_POST['updated_at'];
  
@@ -26,7 +27,7 @@ if (isset($_POST['name']) && isset($_POST['price']) && isset($_POST['description
     $db = new DB_CONNECT();
  
     // mysql inserting a new row
-    $result = mysql_query("INSERT INTO products(name, price, location, distance, description) VALUES('$name', '$price', '$location', '$distance', '$description')");
+    $result = mysql_query("INSERT INTO products(name, price, location, distance, description,image) VALUES('$name', '$price', '$location', '$distance', '$description','$image')");
  
     // check if row inserted or not
     if ($result) {

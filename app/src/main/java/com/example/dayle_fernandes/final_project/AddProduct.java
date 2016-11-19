@@ -4,13 +4,24 @@ package com.example.dayle_fernandes.final_project;
  * Created by aksharma2 on 05-11-2016.
  */
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +30,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
@@ -32,9 +44,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static com.example.dayle_fernandes.final_project.R.id.btnCreateProduct;
-
 public class AddProduct extends Activity {
 
     private ProgressDialog pDialog;
@@ -45,11 +54,8 @@ public class AddProduct extends Activity {
     private static final int CAMERA_REQUEST = 1888;
     private ImageView imageView;
     private String imageString;
-    private Bitmap bmap;
 
-
-
-
+    //JSONParser jsonParser = new JSONParser();
     EditText inputName;
     EditText inputPrice;
     EditText inputDesc;
@@ -62,19 +68,19 @@ public class AddProduct extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_product);
+        this.imageView = (ImageView)this.findViewById(R.id.imageView1);
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = drawable.getBitmap();
+        imageString=BitMapToString(bitmap);
+        imageString = getIntent().getStringExtra("str");
+        Toast.makeText(this,imageString,Toast.LENGTH_SHORT).show();
+//        Log.d("src", imageString);
 
         // Edit Text
         inputName = (EditText) findViewById(R.id.inputName);
         inputPrice = (EditText) findViewById(R.id.inputPrice);
         inputDesc = (EditText) findViewById(R.id.inputDesc);
         inputLocation = (EditText) findViewById(R.id.inputLocation);
-        inputDistance = (EditText) findViewById(R.id.inputDistance);
-        imageView = (ImageView) findViewById(R.id.imageView1);
-        imageView.setImageResource(R.drawable.ic_action_search);
-        imageView.buildDrawingCache();
-        bmap = imageView.getDrawingCache();
-        imageString = encodeTobase64(bmap);
-
 
         // Create button
         Button btnCreateProduct = (Button) findViewById(R.id.btnCreateProduct);
@@ -89,13 +95,22 @@ public class AddProduct extends Activity {
             }
         });
 
+
+
         // button click event
         btnCreateProduct.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 // creating new product in background thread
-                new CreateNewProduct().execute(imageString);
+                String yourURL;
+                String name = inputName.getText().toString();
+                String price = inputPrice.getText().toString();
+                String desc = inputDesc.getText().toString();
+                String loc = inputLocation.getText().toString();
+                String img = imageString;
+                String[] args = {name,price,desc,loc,img};
+                new CreateNewProduct().execute(args);
             }
 
 
@@ -103,17 +118,23 @@ public class AddProduct extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Bitmap photo = null;
-
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            photo = (Bitmap) data.getExtras().get("data");
-
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            this.imageView.setImageBitmap(photo);
+            BitmapDrawable drawable = (BitmapDrawable) this.imageView.getDrawable();
+            Bitmap bitmap = drawable.getBitmap();
+            imageString=BitMapToString(bitmap);
+            data.putExtra("str",imageString);
 
         }
-        imageView.setImageBitmap(photo);
-        imageView.buildDrawingCache();
-        bmap = imageView.getDrawingCache();
-        imageString = AddProduct.encodeTobase64(bmap);
+    }
+
+    public String BitMapToString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp=Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
     }
 
     //helper function
@@ -134,94 +155,95 @@ public class AddProduct extends Activity {
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
-    class CreateNewProduct extends AsyncTask<String, String, String>  {
 
-        String name;
-        String price;
-        String location;
-        String distance;
-        String description;
-        /**
-         * Before starting background thread Show Progress Dialog
-         */
+
+    private class CreateNewProduct extends AsyncTask<String, Void, String>{
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(AddProduct.this);
-            pDialog.setMessage("Creating Product..");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-            name = inputName.getText().toString();
-            price = inputPrice.getText().toString();
-            location=inputLocation.getText().toString();
-            distance=inputDistance.getText().toString();
-            description = inputDesc.getText().toString();
+            Toast.makeText(AddProduct.this, "Adding to basket", Toast.LENGTH_SHORT).show();
         }
 
-        /**
-         * Creating product
-         */
+        @Override
+        protected String doInBackground(String... args){
+            org.apache.http.params.HttpParams httpParameters = new org.apache.http.params.BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+            HttpClient httpClient = new DefaultHttpClient(httpParameters);
+            org.apache.http.client.methods.HttpPost httpPost = new org.apache.http.client.methods.HttpPost(url_create_product);
+            String jsonresult = "";
 
-        protected String doInBackground(String... args) {
-            String jsonStr="";
-            try {
-                ServiceHandler sh = new ServiceHandler();
-                // Building Parameters
-                String image=args[0];
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+            String name = args[0];
+            String price = args[1];
+            String description = args[2];
+            String location = args[3];
+            String img = args[4];
+
+            try{
+                List params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("name", name));
                 params.add(new BasicNameValuePair("price", price));
-                params.add(new BasicNameValuePair("description", description));
-                params.add(new BasicNameValuePair("location", location));
-                params.add(new BasicNameValuePair("distance", distance));
-                params.add(new BasicNameValuePair("image",image));
+                params.add(new BasicNameValuePair("description",description));
+                params.add(new BasicNameValuePair("location",location));
+                params.add(new BasicNameValuePair("image", img));
+                Log.d("Sending data", params.toString());
 
-                // getting JSON Object
-                // Note that create product url accepts POST method
-                //  JSONObject json = jsonParser.makeHttpRequest(url_create_product,
-                //          "POST", params);
-
-                 jsonStr = sh.makeServiceCall(url_create_product, ServiceHandler.POST, params);
-
-                // check log cat fro response
-                Log.d("Create Response", jsonStr.toString());
-            }catch(Exception e){
-
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+                HttpResponse response = httpClient.execute(httpPost);
+                jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
+            }catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-                // check for success tag
-                {
-                    int success = jsonStr.compareTo(TAG_SUCCESS);
-
-                    if (success == 0) {
-                        // successfully created product
-                        Intent i = new Intent(getApplicationContext(), AddProduct.class);
-                        startActivity(i);
-                        Toast.makeText(selfRef, "Success", Toast.LENGTH_SHORT);
-
-                        // closing this screen
-                        finish();
-                    } else {
-                        // failed to create product
-                    }
-                }
-
-                return null;
-
+            Log.d("Register Response", jsonresult.toString());
+            return jsonresult;
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog once done
-            selfRef.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    pDialog.dismiss();
-                }
-            });
-
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            System.out.println("Resulted Value: " + result);
+            if (result.equals("") || result == null) {
+                Toast.makeText(AddProduct.this, "Server connection failed", Toast.LENGTH_LONG).show();
+                return;
+            }
+            String jsonResult = returnParsedJsonObject(result);
+            if (jsonResult == "false") {
+                Toast.makeText(AddProduct.this, "Error adding product to basket", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(jsonResult == "true"){
+                Toast.makeText(AddProduct.this, "Product added to basket", Toast.LENGTH_LONG).show();
+            }
         }
+
+        private StringBuilder inputStreamToString(InputStream is) {
+            String rLine = "";
+            StringBuilder answer = new StringBuilder();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            try {
+                while ((rLine = br.readLine()) != null) {
+                    answer.append(rLine);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return answer;
+        }
+
+        private String returnParsedJsonObject(String result) {
+            JSONObject resultObject = null;
+            String returnedResult = "";
+            try {
+                resultObject = new JSONObject(result);
+                returnedResult = resultObject.getString("success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return returnedResult;
+        }
+
     }
 }

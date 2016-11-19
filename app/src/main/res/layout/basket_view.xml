@@ -16,9 +16,64 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/productlist_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="410dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_purchase"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="500dp"
+        android:background="@color/colorPrimaryDark"
+        android:padding="12dp"
+        android:text="Purchase"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/total_text"
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="15dp"
+        android:textSize="15dp"
+        android:text="Total Amount: "/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/total_amount"
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="110dp"
+        android:textSize="15dp"
+        android:text="250 HKD"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/total_item"
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="190dp"
+        android:textSize="15dp"
+        android:text="Products in Basket: "/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/item_number"
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="320dp"
+        android:textSize="15dp"
+        android:text="10"/>
+
+
+
 
 
 </RelativeLayout>

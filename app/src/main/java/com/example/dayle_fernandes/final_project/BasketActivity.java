@@ -17,6 +17,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import com.google.android.gms.vision.text.Text;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +52,10 @@ public class BasketActivity extends AppCompatActivity{
     private static final String DESCRIPTION= "description";
     private static final String CREATED_AT= "created_at";
     private static final String UPDATED_AT= "updated_at";
+    private double tprice;
+    private int titem_num;
+    private TextView total_price;
+    private TextView total_num;
 
     JSONArray products=null;
     JSONObject obj;
@@ -61,12 +68,17 @@ public class BasketActivity extends AppCompatActivity{
 
         aRecyclerView = (RecyclerView) findViewById(R.id.productlist_recyclerView);
         aRecyclerView.setHasFixedSize(true);
+        total_num = (TextView) findViewById(R.id.item_number);
+        total_price = (TextView) findViewById(R.id.total_amount);
+
 
         // Hashmap for ListView
         productsList = new ArrayList<ProductInfo>();
 
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
+        tprice = 0;
+        titem_num=0;
 
         new GetQuestions().execute();
     }
@@ -105,6 +117,11 @@ public class BasketActivity extends AppCompatActivity{
                         String price = c.getString(PRICE);
                         String loc = c.getString(LOCATION);
 
+                        tprice = tprice + Double.parseDouble(price);
+                        titem_num = products.length();
+
+
+
                         ProductInfo p=new ProductInfo(name,Double.parseDouble(price),loc);
 
 
@@ -130,6 +147,13 @@ public class BasketActivity extends AppCompatActivity{
              * */
             aAdapter=new ProductAdapter(productsList);
             aRecyclerView.setAdapter(aAdapter);
+            tprice = Math.round(tprice);
+            String astring = Double.toString(tprice) + "HKD";
+            total_price.setText(astring);
+            String bstring = Integer.toString(titem_num);
+            total_num.setText(bstring);
+
+
         }
     }
 

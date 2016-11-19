@@ -104,8 +104,8 @@ public class BasketActivity extends AppCompatActivity{
                         String name= c.getString(NAME);
                         String price = c.getString(PRICE);
                         String loc = c.getString(LOCATION);
-                        String dist = c.getString(DISTANCE);
-                        ProductInfo p=new ProductInfo(name,Double.parseDouble(price),Double.parseDouble(dist),loc);
+
+                        ProductInfo p=new ProductInfo(name,Double.parseDouble(price),loc);
 
 
                         productsList.add(p);

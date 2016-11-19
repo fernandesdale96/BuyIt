@@ -46,12 +46,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.client.ClientProtocolException;
 
 import static com.example.dayle_fernandes.final_project.R.id.map;
 import static com.google.android.gms.analytics.internal.zzy.ex;
@@ -76,6 +86,12 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     String aStore;
     //Float distance;
     TextView tv3;
+    String email;
+    String name;
+    String price;
+    String store;
+    private static String url_basket = "http://10.0.2.2/FinalProject/basket.php";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,9 +102,9 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
 
         Intent i = getIntent();
         Bundle b = i.getExtras();
-        String name = b.getString("PROD_NAME");
-        String price = b.getString("PROD_PRICE");
-        String store = b.getString("PROD_STORE");
+        name = b.getString("PROD_NAME");
+        price = b.getString("PROD_PRICE");
+        store = b.getString("PROD_STORE");
         aStore = store;
 
         TextView tv = (TextView) findViewById(R.id.selected_prod_name);
@@ -100,6 +116,15 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         tv4.setText(store);
         cancel = (Button) findViewById(R.id.cancel_button);
         cart = (Button) findViewById(R.id.purchase_button);
+        email = LoginActivity.getEmail();
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission();
+        }
+        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+        mapFrag.getMapAsync(this);
+        buildGoogleApiClient();
+
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,18 +138,156 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LocationActivity.this, "Added to Cart", Toast.LENGTH_SHORT).show();
+                String args[]={name,price,store};
+                new addBasket().execute(args);
             }
         });
 
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
-        mapFrag.getMapAsync(this);
-        buildGoogleApiClient();
+
+
     }
+
+
+    private class addBasket extends AsyncTask<String, Void, String>{
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(LocationActivity.this, "Adding to basket", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected String doInBackground(String... args){
+            org.apache.http.params.HttpParams httpParameters = new org.apache.http.params.BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+            HttpClient httpClient = new DefaultHttpClient(httpParameters);
+            org.apache.http.client.methods.HttpPost httpPost = new org.apache.http.client.methods.HttpPost(url_basket);
+            String jsonresult = "";
+
+            String name = args[0];
+            String price = args[1];
+            String store = args[2];
+            String description = "x";
+
+            try{
+                List params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("name", name));
+                params.add(new BasicNameValuePair("price", price));
+                params.add(new BasicNameValuePair("location",store));
+                params.add(new BasicNameValuePair("description", description));
+                Log.d("Sending data", params.toString());
+
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+                HttpResponse response = httpClient.execute(httpPost);
+                jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
+            }catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("Register Response", jsonresult.toString());
+
+            return jsonresult;
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            System.out.println("Resulted Value: " + result);
+
+            if (result.equals("") || result == null) {
+
+                Toast.makeText(LocationActivity.this, "Server connection failed", Toast.LENGTH_LONG).show();
+
+
+                return;
+
+            }
+
+            String jsonResult = returnParsedJsonObject(result);
+
+            if (jsonResult == "false") {
+
+                Toast.makeText(LocationActivity.this, "Error adding product to basket", Toast.LENGTH_LONG).show();
+
+                return;
+            }
+
+            if(jsonResult == "true"){
+                Toast.makeText(LocationActivity.this, "Product added to basket", Toast.LENGTH_LONG).show();
+
+
+            }
+        }
+
+        private StringBuilder inputStreamToString(InputStream is) {
+
+            String rLine = "";
+
+            StringBuilder answer = new StringBuilder();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            try {
+
+                while ((rLine = br.readLine()) != null) {
+
+                    answer.append(rLine);
+
+                }
+
+            } catch (IOException e) {
+
+
+                e.printStackTrace();
+
+            }
+
+            return answer;
+
+        }
+
+        private String returnParsedJsonObject(String result) {
+
+            JSONObject resultObject = null;
+
+            String returnedResult = "";
+
+            try {
+
+                resultObject = new JSONObject(result);
+
+                returnedResult = resultObject.getString("success");
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+
+            }
+
+            return returnedResult;
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+
 
 
     @Override
@@ -160,7 +323,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-            mGoogleApiClient.connect();
+
             Log.i("Api is", "" + mGoogleApiClient);
         }
 

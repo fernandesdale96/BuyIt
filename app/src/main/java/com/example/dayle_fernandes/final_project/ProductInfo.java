@@ -12,15 +12,15 @@ public class ProductInfo implements Serializable{
     private long id;
     private String name;
     private double price;
-    private double distance;
+
     private String store;
 
     public ProductInfo(){}
 
-    public ProductInfo(String aname, double aprice, double adistance, String aStore){
+    public ProductInfo(String aname, double aprice, String aStore){
         this.name = aname;
         this.price = aprice;
-        this.distance = adistance;
+
         this.store = aStore;
     }
 
@@ -28,7 +28,7 @@ public class ProductInfo implements Serializable{
         this.id=id;
         this.name = aname;
         this.price = aprice;
-        this.distance = adistance;
+
         this.store = aStore;
     }
 
@@ -42,9 +42,7 @@ public class ProductInfo implements Serializable{
         return price;
     }
 
-    public double getDistance(){
-        return distance;
-    }
+
 
     public String getStore(){
         return store;
@@ -58,9 +56,7 @@ public class ProductInfo implements Serializable{
         this.price = price;
     }
 
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
+
 
     public void setStore(String store) {
         this.store = store;

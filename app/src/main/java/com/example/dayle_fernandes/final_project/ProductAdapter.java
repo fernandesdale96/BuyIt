@@ -39,6 +39,8 @@ import java.util.List;
 
 import DB.ProductHandler;
 
+import static android.R.attr.description;
+
 
 /**
  * Created by dayle_fernandes on 31-Oct-16.
@@ -82,6 +84,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
             aStore = (TextView) view.findViewById(R.id.product_store);
 
+
             onSwipeTouchListener = (new OnSwipeTouchListener(ctx) {
                 public void onSwipeTop() {
                     Toast.makeText(ctx, "top", Toast.LENGTH_SHORT).show();
@@ -101,12 +104,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     pr = (pPrice.getText().toString());
                     pr = pr.replaceAll("[^\\d.]", "");
                     // p.setDistance(Double.parseDouble(aDistance.getText().toString()));
-                    dis = (aDistance.getText().toString());
-                    dis = dis.replaceAll("[^\\d.]", "");
+                    //dis = (aDistance.getText().toString());
+                    //dis = dis.replaceAll("[^\\d.]", "");
                     // p.setStore(aStore.getText().toString());
                     st = aStore.getText().toString();
 
-                    yourURL = "http://10.0.2.2/FinalProject/add_basket_product.php?name=" + nm + "&price=" + pr + "&distance=" + dis + "&location=" + st + "&description=x";
+                    yourURL = "http://10.0.2.2/FinalProject/add_basket_product.php?name=" + nm + "&price=" + pr + "&location=" + st + "&description=x";
                     Log.d("url: ", yourURL);
 
                     new CreateNewProduct().execute(yourURL);
@@ -147,11 +150,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         class CreateNewProduct extends AsyncTask<String, String, String> {
 
-            String name=ViewHolder.this.pName.toString();
-                       String price=ViewHolder.this.pPrice.toString();;
-                        String location=ViewHolder.this.aStore.toString();;
-                       String distance=ViewHolder.this.aDistance.toString();;
-                        String description="x";
+            String name = ViewHolder.this.pName.toString();
+            String price = ViewHolder.this.pPrice.toString();
+            ;
+            String location = ViewHolder.this.aStore.toString();
+            ;
+            //String distance=ViewHolder.this.aDistance.toString();;
+            String description = "x";
 
             /**
              * Before starting background thread Show Progress Dialog
@@ -177,8 +182,17 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 try {
                     DefaultHttpClient client = new DefaultHttpClient();
                     HttpResponse res = client.execute(new HttpGet(args[0]));
+
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("name", name));
+                    params.add(new BasicNameValuePair("price", price));
+                    params.add(new BasicNameValuePair("location", location));
+
+                    params.add(new BasicNameValuePair("description", description));
+
+
                     // Building Parameters
-                    Log.d("Create Response", distance);
+
                     //jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
                     // check log cat fro response
                     Log.d("Create Response", jsonStr.toString());

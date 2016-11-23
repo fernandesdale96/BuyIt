@@ -6,7 +6,6 @@
 
 	$pname = "";
 	$price = "";
-	$description ="";
 	$location = "";
 	$email = "";
 
@@ -18,9 +17,6 @@
 		$price = $_POST['price'];
 	}
 
-	if(isset($_POST['description'])){
-		$description = $_POST['description'];
-	}
 
 	if(isset($_POST['location'])){
 		$location = $_POST['location'];
@@ -29,15 +25,15 @@
 		$email = $_POST['email'];
 	}
 
-	$json_addbasket = addBasket($pname,$price,$description,$location,$email,$connection_r);
+	$json_addbasket = addPurchase($pname,$price,$location,$email,$connection_r);
 
 	echo json_encode($json_addbasket);
 
 
-	function addBasket($pname,$price,$description,$location,$email,$connection_r){
+	function addPurchase($pname,$price,$location,$email,$connection_r){
 	
 		
-			$result_m = mysqli_query($connection_r,"INSERT INTO basket(name, price, location, description, email) VALUES('$pname', '$price', '$location', '$description','$email')");
+			$result_m = mysqli_query($connection_r,"INSERT INTO purchased(name, price, location, uemail) VALUES('$pname', '$price', '$location', '$email')");
 
 			if($result_m){
 				$json['success'] = true;

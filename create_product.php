@@ -1,56 +1,61 @@
 <?php
- 
+
+
+    $connection_r = mysqli_connect("localhost","root","","products");
+    header('Content-Type: application/json');
+
 /*
- * Following code will create a new product row
- * All product details are read from HTTP Post Request
- */
- 
-// array for JSON response
-$response = array();
- 
-// check for required fields
-if (isset($_POST['name']) && isset($_POST['price']) && isset($_POST['description']) && isset($_POST['location']) && isset($_POST['distance']) && isset($_POST['image'])) {
- 
-    $name = $_POST['name'];
-    $price = $_POST['price'];
-    $description = $_POST['description'];
-    $location = $_POST['location'];
-    $distance = $_POST['distance'];
-    $image = $_POST['image'];
-    $created_at = $_POST['created_at'];
-    $updated_at = $_POST['updated_at'];
- 
-    // include db connect class
-    require_once __DIR__ . '/db_connect.php';
- 
-    // connecting to db
-    $db = new DB_CONNECT();
- 
-    // mysql inserting a new row
-    $result = mysql_query("INSERT INTO products(name, price, location, distance, description,image) VALUES('$name', '$price', '$location', '$distance', '$description','$image')");
- 
-    // check if row inserted or not
-    if ($result) {
-        // successfully inserted into database
-        $response["success"] = 1;
-        $response["message"] = "Product successfully created.";
- 
-        // echoing JSON response
-        echo json_encode($response);
-    } else {
-        // failed to insert row
-        $response["success"] = 0;
-        $response["message"] = "Oops! An error occurred.";
- 
-        // echoing JSON response
-        echo json_encode($response);
+    $pname = "a";
+    $price = "a";
+    $description = "a";
+    $location = "a";
+    $distance = "a";
+    $image = "a";
+*/
+
+    if(isset($_POST['name'])){
+        $pname = $_POST['name'];
     }
-} else {
-    // required field is missing
-    $response["success"] = 0;
-    $response["message"] = "Required field(s) is missing";
- 
-    // echoing JSON response
-    echo json_encode($response);
-}
+
+    if(isset($_POST['price'])){
+       $price = $_POST['price'];
+    }
+
+    if(isset($_POST['description'])){
+        $description = $_POST['description'];
+    }
+
+    if(isset($_POST['location'])){
+        $location = $_POST['location']; 
+    }
+
+
+    if(isset($_POST['image'])){
+        $image = $_POST['image'];
+    } 
+
+    $json_addproduct = addProduct($pname, $price, $description, $location, $image, $connection_r);
+
+    echo json_encode($json_addproduct);
+
+
+    function addProduct($pname, $price, $description, $location, $image, $connection_r){
+    
+        
+            $result_m = mysqli_query($connection_r, "INSERT INTO products(name, price, location, description, image) VALUES('$pname', '$price', '$location', '$description', '$image')" );
+
+            if($result_m){
+                $json['success'] = true;
+                $json['message'] = "Product added to basket";
+            }
+            else{
+                $json['success'] = false;
+                $json['message'] = "Product could not be added to basket";
+            }
+
+            return $json;
+        }
+        
+
+        
 ?>

@@ -12,6 +12,8 @@ require_once __DIR__ . '/db_connect.php';
  
 // connecting to db
 $db = new DB_CONNECT();
+
+
  
 // get all products from basket table
 $result = mysql_query("SELECT * FROM basket") or die(mysql_error());
@@ -29,9 +31,7 @@ if (mysql_num_rows($result) > 0) {
             $product["name"] = $row["name"];
             $product["price"] = $row["price"];
             $product["location"] = $row["location"];
-            $product["description"] = $row["description"];
-            $product["created_at"] = $row["created_at"];
-            $product["updated_at"] = $row["updated_at"];
+            $product["email"] = $row["email"];
  
         // push single product into final response array
         array_push($response["products"], $product);

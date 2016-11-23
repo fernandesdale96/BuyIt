@@ -138,7 +138,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String args[]={name,price,store};
+                String args[]={name,price,store,email};
                 new addBasket().execute(args);
             }
         });
@@ -167,6 +167,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
             String name = args[0];
             String price = args[1];
             String store = args[2];
+            String aemail = args[3];
             String description = "x";
 
             try{
@@ -175,6 +176,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                 params.add(new BasicNameValuePair("price", price));
                 params.add(new BasicNameValuePair("location",store));
                 params.add(new BasicNameValuePair("description", description));
+                params.add(new BasicNameValuePair("email",aemail));
                 Log.d("Sending data", params.toString());
 
                 httpPost.setEntity(new UrlEncodedFormEntity(params));

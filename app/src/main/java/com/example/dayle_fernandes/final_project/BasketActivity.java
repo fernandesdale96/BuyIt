@@ -3,6 +3,7 @@ package com.example.dayle_fernandes.final_project;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -17,7 +18,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.google.android.gms.vision.text.Text;
 
@@ -27,38 +31,46 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import static com.google.android.gms.analytics.internal.zzy.em;
+
 /**
  * Created by aksharma2 on 11-11-2016.
  */
-public class BasketActivity extends AppCompatActivity{
+public class BasketActivity extends AppCompatActivity {
 
     RecyclerView aRecyclerView;
     RecyclerView.LayoutManager aLayoutManager;
     RecyclerView.Adapter aAdapter;
     testProductList list;
-    BasketActivity selfRef=this;
+    BasketActivity selfRef = this;
 
     ArrayList<ProductInfo> productsList;
     // url to get all products list
-    private static String url_all_products = "http://10.0.2.2/FinalProject/show_basket_products.php";
+
 
     private ProgressDialog pDialog;
     private static final String PRODUCTS = "products";
-    private static final String ID= "pid";
-    private static final String NAME= "name";
-    private static final String PRICE= "price";
-    private static final String LOCATION= "location";
-    private static final String DISTANCE= "distance";
-    private static final String DESCRIPTION= "description";
-    private static final String CREATED_AT= "created_at";
-    private static final String UPDATED_AT= "updated_at";
+    private static final String ID = "pid";
+    private static final String NAME = "name";
+    private static final String PRICE = "price";
+    private static final String LOCATION = "location";
+    private static final String DISTANCE = "distance";
+    private static final String DESCRIPTION = "description";
+    private static final String CREATED_AT = "created_at";
+    private static final String UPDATED_AT = "updated_at";
+    private static final String EMAIL = "email";
+
     private double tprice;
     private int titem_num;
     private TextView total_price;
     private TextView total_num;
+    private Button purchase;
 
-    JSONArray products=null;
+    JSONArray products = null;
     JSONObject obj;
+    String aemail = LoginActivity.getEmail();
+    private String url_all_products = "http://10.0.2.2/FinalProject/show_basket_products.php";
     // ArrayList<HashMap<String, String>> productList = new ArrayList<HashMap<String, String>>();
 
     @Override
@@ -70,6 +82,14 @@ public class BasketActivity extends AppCompatActivity{
         aRecyclerView.setHasFixedSize(true);
         total_num = (TextView) findViewById(R.id.item_number);
         total_price = (TextView) findViewById(R.id.total_amount);
+        purchase = (Button) findViewById(R.id.btn_purchase);
+
+        purchase.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
 
 
         // Hashmap for ListView
@@ -78,7 +98,7 @@ public class BasketActivity extends AppCompatActivity{
         aLayoutManager = new LinearLayoutManager(this);
         aRecyclerView.setLayoutManager(aLayoutManager);
         tprice = 0;
-        titem_num=0;
+        titem_num = 0;
 
         new GetQuestions().execute();
     }
@@ -95,6 +115,7 @@ public class BasketActivity extends AppCompatActivity{
             pDialog.show();
 
         }
+
         @Override
         protected Void doInBackground(Void... arg0) {
             // Creating service handler class instance
@@ -103,29 +124,30 @@ public class BasketActivity extends AppCompatActivity{
             Log.d("Response: ", "> " + jsonStr);
 
             if (jsonStr != null) {
-                try{
+                try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
                     // Getting JSON Array node
                     products = jsonObj.getJSONArray(PRODUCTS);
                     // looping through All Questions
-                    for(int i = 0; i < products.length(); i++){
+                    for (int i = 0; i < products.length(); i++) {
                         JSONObject c = products.getJSONObject(i);
 
-                        String id = c.getString(ID);
-                        String name= c.getString(NAME);
-                        String price = c.getString(PRICE);
-                        String loc = c.getString(LOCATION);
+                        if (c.getString(EMAIL).equals(aemail)) {
+                            String id = c.getString(ID);
+                            String name = c.getString(NAME);
+                            String price = c.getString(PRICE);
+                            String loc = c.getString(LOCATION);
 
-                        tprice = tprice + Double.parseDouble(price);
-                        titem_num = products.length();
-
-
-
-                        ProductInfo p=new ProductInfo(name,Double.parseDouble(price),loc);
+                            tprice = tprice + Double.parseDouble(price);
+                            titem_num++;
 
 
-                        productsList.add(p);
+                            ProductInfo p = new ProductInfo(name, Double.parseDouble(price), loc);
+
+
+                            productsList.add(p);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -136,6 +158,7 @@ public class BasketActivity extends AppCompatActivity{
 
             return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
@@ -145,7 +168,7 @@ public class BasketActivity extends AppCompatActivity{
             /**
              * Updating parsed JSON data into ListView
              * */
-            aAdapter=new ProductAdapter(productsList);
+            aAdapter = new ProductAdapter(productsList);
             aRecyclerView.setAdapter(aAdapter);
             tprice = Math.round(tprice);
             String astring = Double.toString(tprice) + "HKD";
@@ -157,5 +180,6 @@ public class BasketActivity extends AppCompatActivity{
         }
     }
 
-}
 
+
+}

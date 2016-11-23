@@ -60,6 +60,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     String url_basket = "http://10.0.2.2/FinalProject/basket.php";
     private ProgressDialog pDialog;
     private static final String TAG_SUCCESS = "success";
+    private String email = LoginActivity.getEmail();
 
     public String nm, st, pr, dis;
 
@@ -81,6 +82,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView aStore;
         private Context ctx = null;
         OnSwipeTouchListener onSwipeTouchListener;
+
         ProductInfo p;
 
         public ViewHolder(final View view) {
@@ -110,7 +112,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     st = aStore.getText().toString();
 
 
-                    new CreateNewProduct().execute(nm,pr,st);
+                    new CreateNewProduct().execute(nm,pr,st,email);
 
 
                 }
@@ -165,6 +167,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 String price = args[1];
                 String store = args[2];
                 String description = "x";
+                String uemail = args[3];
 
                 try{
                     List params = new ArrayList<NameValuePair>();
@@ -172,6 +175,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     params.add(new BasicNameValuePair("price", price));
                     params.add(new BasicNameValuePair("location",store));
                     params.add(new BasicNameValuePair("description", description));
+                    params.add(new BasicNameValuePair("email",uemail));
                     Log.d("Sending data", params.toString());
 
                     httpPost.setEntity(new UrlEncodedFormEntity(params));

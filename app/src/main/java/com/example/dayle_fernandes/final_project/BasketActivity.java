@@ -1,6 +1,7 @@
 package com.example.dayle_fernandes.final_project;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,11 +26,25 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.text.Text;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
+
+import cz.msebera.android.httpclient.client.ClientProtocolException;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static com.google.android.gms.analytics.internal.zzy.em;
@@ -71,6 +86,7 @@ public class BasketActivity extends AppCompatActivity {
     JSONObject obj;
     String aemail = LoginActivity.getEmail();
     private String url_all_products = "http://10.0.2.2/FinalProject/show_basket_products.php";
+    private String url_purchase = "http://10.0.2.2/FinalProject/purchase.php";
     // ArrayList<HashMap<String, String>> productList = new ArrayList<HashMap<String, String>>();
 
     @Override
@@ -87,6 +103,19 @@ public class BasketActivity extends AppCompatActivity {
         purchase.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                Toast.makeText(BasketActivity.this,"Validating Purchase",Toast.LENGTH_LONG);
+                for(ProductInfo p : productsList){
+                    String name = p.getName();
+                    String price = Double.toString(p.getPrice());
+                    String location = p.getStore();
+                    String email = aemail;
+                    new BuyProduct().execute(name,price,location,email);
+                }
+
+                Intent i = new Intent(BasketActivity.this,PurchasedActivity.class);
+                startActivity(i);
+                finish();
+
 
             }
         });
@@ -101,6 +130,127 @@ public class BasketActivity extends AppCompatActivity {
         titem_num = 0;
 
         new GetQuestions().execute();
+    }
+
+    private class BuyProduct extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected String doInBackground(String... args){
+            org.apache.http.params.HttpParams httpParameters = new org.apache.http.params.BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+            HttpClient httpClient = new DefaultHttpClient(httpParameters);
+            org.apache.http.client.methods.HttpPost httpPost = new org.apache.http.client.methods.HttpPost(url_purchase);
+            String jsonresult = "";
+
+            String name = args[0];
+            String price = args[1];
+            String store = args[2];
+            String aemail = args[3];
+
+
+            try{
+                List params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("name", name));
+                params.add(new BasicNameValuePair("price", price));
+                params.add(new BasicNameValuePair("location",store));
+                params.add(new BasicNameValuePair("email",aemail));
+                Log.d("Sending data", params.toString());
+
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+                HttpResponse response = httpClient.execute(httpPost);
+                jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
+            }catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("Register Response", jsonresult.toString());
+
+            return jsonresult;
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            System.out.println("Resulted Value: " + result);
+
+            if (result.equals("") || result == null) {
+
+                Toast.makeText(BasketActivity.this, "Server connection failed", Toast.LENGTH_LONG).show();
+
+
+                return;
+
+            }
+
+            String jsonResult = returnParsedJsonObject(result);
+
+            if (jsonResult == "false") {
+
+                Toast.makeText(BasketActivity.this, "Product could not be purchased", Toast.LENGTH_LONG).show();
+
+                return;
+            }
+
+            if(jsonResult == "true"){
+                Toast.makeText(BasketActivity.this, "Product Purchased", Toast.LENGTH_LONG).show();
+
+
+            }
+        }
+
+        private StringBuilder inputStreamToString(InputStream is) {
+
+            String rLine = "";
+
+            StringBuilder answer = new StringBuilder();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            try {
+
+                while ((rLine = br.readLine()) != null) {
+
+                    answer.append(rLine);
+
+                }
+
+            } catch (IOException e) {
+
+
+                e.printStackTrace();
+
+            }
+
+            return answer;
+
+        }
+
+        private String returnParsedJsonObject(String result) {
+
+            JSONObject resultObject = null;
+
+            String returnedResult = "";
+
+            try {
+
+                resultObject = new JSONObject(result);
+
+                returnedResult = resultObject.getString("success");
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+
+            }
+
+            return returnedResult;
+
+        }
+
     }
 
     private class GetQuestions extends AsyncTask<Void, Void, Void> {

@@ -339,6 +339,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {
             finish();
             System.exit(0);
+        }else if(id == R.id.nav_history){
+            Intent i = new Intent(this,PurchasedActivity.class);
+            startActivity(i);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(com.example.dayle_fernandes.final_project.R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

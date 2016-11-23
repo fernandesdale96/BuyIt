@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (result.isSuccess()) {
             GoogleSignInAccount act = result.getSignInAccount();
             name = act.getDisplayName();
-            //profile_url = act.getPhotoUrl().toString();
+            profile_url = act.getPhotoUrl().toString();
             email_id = act.getEmail();
 
             Context context = getApplicationContext();

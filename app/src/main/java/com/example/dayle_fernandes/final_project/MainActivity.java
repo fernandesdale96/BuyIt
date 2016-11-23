@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton search = (FloatingActionButton) findViewById(com.example.dayle_fernandes.final_project.R.id.search);
+        /*FloatingActionButton search = (FloatingActionButton) findViewById(com.example.dayle_fernandes.final_project.R.id.search);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Snackbar.make(view, "Implement Search Function", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(com.example.dayle_fernandes.final_project.R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

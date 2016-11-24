@@ -13,7 +13,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        Intent newIntent = new Intent(SplashActivity.this, SignUpActivity.class);
+        Intent newIntent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(newIntent);
         finish();
     }

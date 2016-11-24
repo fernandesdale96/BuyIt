@@ -56,7 +56,7 @@ public class ProductHandler{
         ContentValues values = new ContentValues();
         values.put(ProductDBHandler.COLUMN_NAME, pinfo.getName());
         values.put(ProductDBHandler.COLUMN_PRICE, pinfo.getPrice());
-        values.put(ProductDBHandler.COLUMN_DISTANCE, pinfo.getDistance());
+
         values.put(ProductDBHandler.COLUMN_STORE, pinfo.getStore());
         long id = database.insert(ProductDBHandler.TABLE_PRODUCTS,null, values);
         pinfo.setId(id);
@@ -72,7 +72,7 @@ public class ProductHandler{
                 pinfo.setId(cursor.getLong(cursor.getColumnIndex(ProductDBHandler.COLUMN_ID)));
                 pinfo.setName(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_NAME)));
                 pinfo.setPrice(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_PRICE))));
-                pinfo.setDistance(Double.parseDouble(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_DISTANCE))));
+
                 pinfo.setStore(cursor.getString(cursor.getColumnIndex(ProductDBHandler.COLUMN_STORE)));
                 products.add(pinfo);
             }

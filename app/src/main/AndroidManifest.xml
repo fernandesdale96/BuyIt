@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dayle_fernandes.final_project">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permissions -->
 
@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.camera"></uses-feature>
 
     <!-- Google MAP API key -->
 
@@ -43,8 +45,7 @@
         <activity android:name=".ViewAddedProducts"></activity>
 
 
-
-            android:theme="@style/AppTheme.NoActionBar" />
+        android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -65,6 +66,9 @@
             android:name=".CreditCardForm"
             android:label="CreditCardForm"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".PurchasedActivity"
+            android:label="Order History" />
         <activity
             android:name=".LocationActivity"
             android:label="LocationActivity" />

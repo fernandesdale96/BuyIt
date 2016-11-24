@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -31,17 +32,32 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.vision.text.Text;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import cz.msebera.android.httpclient.client.ClientProtocolException;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.dayle_fernandes.final_project.R.id.btn_login;
 import static com.example.dayle_fernandes.final_project.R.id.intent_action;
 import static com.example.dayle_fernandes.final_project.R.id.start;
-
+import static com.example.dayle_fernandes.final_project.R.string.valid;
 
 
 /**
@@ -68,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private SessionManager session;
 
 
-    private static String url_log_in = "http://10.0.2.2/FinalProject/android_login.php";
+    private static String url_log_in = "http://10.0.2.2/FinalProject/login.php";
     private static final String TAG = LoginActivity.class.getSimpleName();
 
 
@@ -158,84 +174,148 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email_text = email.getText().toString().trim();
         String password_text = pass.getText().toString().trim();
 
-        checkLogin(email_text,password_text);
+        if(!email_text.isEmpty() && !password_text.isEmpty()) {
+            new LoginUser().execute(email_text,password_text);
+        }
+        else{
+            Toast.makeText(getApplicationContext(),
+                    "Please enter your details!", Toast.LENGTH_LONG)
+                    .show();
+            btnlogin.setEnabled(true);
+        }
 
 
 
     }
 
-    private void checkLogin(final String email, final String pass){
-        String tag_string_req = "req_login";
+    private class LoginUser extends AsyncTask<String,Void,String>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog.setMessage("Logging Account");
+            mProgressDialog.setIndeterminate(false);
+            showDialog();
+        }
 
+        @Override
+        protected String doInBackground(String... args){
+            org.apache.http.params.HttpParams httpParameters = new org.apache.http.params.BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+            HttpClient httpClient = new DefaultHttpClient(httpParameters);
+            org.apache.http.client.methods.HttpPost httpPost = new org.apache.http.client.methods.HttpPost(url_log_in);
+            String jsonresult = "";
 
+            String aemail = args[0];
+            email_id = aemail;
+            String upass = args[1];
 
-        //mProgressDialog.setMessage("Loggig in...");
-        //showProgressDialog();
+            try {
+                List params = new ArrayList<NameValuePair>();
 
-        StringRequest strReq = new StringRequest(Request.Method.POST, url_log_in, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, "Login Response: " + response.toString());
+                //Log.d("sending name check",uname);
+                params.add(new BasicNameValuePair("email", aemail));
+                params.add(new BasicNameValuePair("password", upass));
+
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+                HttpResponse response = httpClient.execute(httpPost);
+                jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
+                //jsonStr = sh.makeServiceCall(url_register,ServiceHandler.POST,params);
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("Register Response", jsonresult.toString());
+
+            return jsonresult;
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            System.out.println("Resulted Value: " + result);
+
+            if (result.equals("") || result == null) {
+
+                Toast.makeText(LoginActivity.this, "Server connection failed", Toast.LENGTH_LONG).show();
                 hideDialog();
 
-                try {
-                    JSONObject jso = new JSONObject(response);
-                    boolean error = jso.getBoolean("error");
+                return;
 
-                    if(!error){
-                        session.setLogin(true);
+            }
 
-                        String uid = jso.getString("uid");
+            String jsonResult = returnParsedJsonObject(result);
 
-                        JSONObject user = jso.getJSONObject("user");
-                        String name = user.getString("name");
-                        String email = user.getString("email");
-                        email_id = email;
-                        String created_at = user.getString("created_at");
+            if (jsonResult == "false") {
 
+                Toast.makeText(LoginActivity.this, "User does not exist. Please sign up", Toast.LENGTH_LONG).show();
+                hideDialog();
+                onLoginFailed();
 
+                return;
+            }
 
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
+            if(jsonResult == "true"){
+                hideDialog();
 
-                    }else{
-                        String errormsg = jso.getString("error_msg");
-                        Toast.makeText(getApplicationContext(),
-                                errormsg, Toast.LENGTH_LONG).show();
-                    }
-                } catch (JSONException e) {
-                    // JSON error
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Json error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                onLoginSuccess();
+            }
+        }
+
+        private StringBuilder inputStreamToString(InputStream is) {
+
+            String rLine = "";
+
+            StringBuilder answer = new StringBuilder();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            try {
+
+                while ((rLine = br.readLine()) != null) {
+
+                    answer.append(rLine);
+
                 }
 
-            }
-        }, new Response.ErrorListener() {
+            } catch (IOException e) {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Login Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
-                hideDialog();
-            }
-        }) {
 
-            @Override
-            protected Map<String, String> getParams() {
-                // Posting parameters to login url
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("email", email);
-                params.put("password", password);
+                e.printStackTrace();
 
-                return params;
             }
 
-        };
+            return answer;
 
-        // Adding request to request queue
+        }
+
+        private String returnParsedJsonObject(String result) {
+
+            JSONObject resultObject = null;
+
+            String returnedResult = "";
+
+            try {
+
+                resultObject = new JSONObject(result);
+
+                returnedResult = resultObject.getString("success");
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+
+            }
+
+            return returnedResult;
+
+        }
     }
+
+
 
     private void showDialog() {
         if (!mProgressDialog.isShowing())
@@ -251,6 +331,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login Failed", Toast.LENGTH_LONG).show();
         btnlogin.setEnabled(true);
+    }
+
+    public void onLoginSuccess() {
+        btnlogin.setEnabled(true);
+
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
+
     }
 
     public boolean validate(){

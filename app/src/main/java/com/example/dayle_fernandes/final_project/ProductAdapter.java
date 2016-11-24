@@ -19,14 +19,19 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -38,6 +43,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import DB.ProductHandler;
+import cz.msebera.android.httpclient.client.ClientProtocolException;
+
+import static android.R.attr.description;
 
 
 /**
@@ -49,9 +57,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     private ArrayList<ProductInfo> inf;
     ProductAdapter selfRef = this;
-    String url_add_product = "http://10.0.2.2/FinalProject/add_basket_product.php";
+    String url_basket = "http://10.0.2.2/FinalProject/basket.php";
     private ProgressDialog pDialog;
     private static final String TAG_SUCCESS = "success";
+    private String email = LoginActivity.getEmail();
 
     public String nm, st, pr, dis;
 
@@ -73,6 +82,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         TextView aStore;
         private Context ctx = null;
         OnSwipeTouchListener onSwipeTouchListener;
+
         ProductInfo p;
 
         public ViewHolder(final View view) {
@@ -81,6 +91,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             pName = (TextView) view.findViewById(R.id.selected_prod_name);
             pPrice = (TextView) view.findViewById(R.id.selected_prod_price);
             aStore = (TextView) view.findViewById(R.id.product_store);
+
 
             onSwipeTouchListener = (new OnSwipeTouchListener(ctx) {
                 public void onSwipeTop() {
@@ -92,24 +103,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 }
 
                 public void onSwipeLeft() {
-                    HttpClient client = new DefaultHttpClient();
-                    String yourURL;
-                    Toast.makeText(ctx, "Added to cart", Toast.LENGTH_SHORT).show();
-                    //  p.setName(pName.getText().toString());
+
                     nm = (pName.getText().toString());
-                    // p.setPrice(Double.parseDouble(pPrice.getText().toString()));
+
                     pr = (pPrice.getText().toString());
                     pr = pr.replaceAll("[^\\d.]", "");
-                    // p.setDistance(Double.parseDouble(aDistance.getText().toString()));
-                    dis = (aDistance.getText().toString());
-                    dis = dis.replaceAll("[^\\d.]", "");
-                    // p.setStore(aStore.getText().toString());
+
                     st = aStore.getText().toString();
 
-                    yourURL = "http://10.0.2.2/FinalProject/add_basket_product.php?name=" + nm + "&price=" + pr + "&distance=" + dis + "&location=" + st + "&description=x";
-                    Log.d("url: ", yourURL);
 
-                    new CreateNewProduct().execute(yourURL);
+                    new CreateNewProduct().execute(nm,pr,st,email);
 
 
                 }
@@ -145,64 +148,137 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             view.setOnTouchListener(onSwipeTouchListener);
         }
 
-        class CreateNewProduct extends AsyncTask<String, String, String> {
+        class CreateNewProduct extends AsyncTask<String, Void, String>{
 
-            String name=ViewHolder.this.pName.toString();
-                       String price=ViewHolder.this.pPrice.toString();;
-                        String location=ViewHolder.this.aStore.toString();;
-                       String distance=ViewHolder.this.aDistance.toString();;
-                        String description="x";
-
-            /**
-             * Before starting background thread Show Progress Dialog
-             */
-            @Override
             protected void onPreExecute() {
-                super.onPreExecute();
-                pDialog = new ProgressDialog(ctx);
-                pDialog.setMessage("Creating Product..");
-                pDialog.setIndeterminate(false);
-                pDialog.setCancelable(true);
-                pDialog.show();
+                Toast.makeText(ctx,"Adding to basket",Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            protected String doInBackground(String... args){
+                org.apache.http.params.HttpParams httpParameters = new org.apache.http.params.BasicHttpParams();
+                HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+                HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+                HttpClient httpClient = new DefaultHttpClient(httpParameters);
+                org.apache.http.client.methods.HttpPost httpPost = new org.apache.http.client.methods.HttpPost(url_basket);
+                String jsonresult = "";
+
+                String name = args[0];
+                String price = args[1];
+                String store = args[2];
+                String description = "x";
+                String uemail = args[3];
+
+                try{
+                    List params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("name", name));
+                    params.add(new BasicNameValuePair("price", price));
+                    params.add(new BasicNameValuePair("location",store));
+                    params.add(new BasicNameValuePair("description", description));
+                    params.add(new BasicNameValuePair("email",uemail));
+                    Log.d("Sending data", params.toString());
+
+                    httpPost.setEntity(new UrlEncodedFormEntity(params));
+                    HttpResponse response = httpClient.execute(httpPost);
+                    jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
+                }catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("Register Response", jsonresult.toString());
+
+                return jsonresult;
 
             }
 
-            /**
-             * Creating product
-             */
             @Override
-            protected String doInBackground(String... args) {
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                System.out.println("Resulted Value: " + result);
 
-                String jsonStr = "";
-                try {
-                    DefaultHttpClient client = new DefaultHttpClient();
-                    HttpResponse res = client.execute(new HttpGet(args[0]));
-                    // Building Parameters
-                    Log.d("Create Response", distance);
-                    //jsonStr = sh.makeServiceCall(url_add_product, ServiceHandler.POST, params);
-                    // check log cat fro response
-                    Log.d("Create Response", jsonStr.toString());
-                } catch (Exception e) {
+                if (result.equals("") || result == null) {
+
+                    Toast.makeText(ctx, "Server connection failed", Toast.LENGTH_LONG).show();
+
+
+                    return;
 
                 }
-                // check for success tag
-                return "success";
+
+                String jsonResult = returnParsedJsonObject(result);
+
+                if (jsonResult == "false") {
+
+                    Toast.makeText(ctx, "Error adding product to basket", Toast.LENGTH_LONG).show();
+
+                    return;
+                }
+
+                if(jsonResult == "true"){
+                    Toast.makeText(ctx, "Product added to basket", Toast.LENGTH_LONG).show();
+
+
+                }
+            }
+
+            private StringBuilder inputStreamToString(InputStream is) {
+
+                String rLine = "";
+
+                StringBuilder answer = new StringBuilder();
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+                try {
+
+                    while ((rLine = br.readLine()) != null) {
+
+                        answer.append(rLine);
+
+                    }
+
+                } catch (IOException e) {
+
+
+                    e.printStackTrace();
+
+                }
+
+                return answer;
 
             }
 
-            /**
-             * After completing background task Dismiss the progress dialog
-             **/
-            protected void onPostExecute(String result) {
-                // dismiss the dialog once done
+            private String returnParsedJsonObject(String result) {
 
-                // Dismiss the progress dialog
-                if (pDialog.isShowing())
-                    pDialog.dismiss();
+                JSONObject resultObject = null;
+
+                String returnedResult = "";
+
+                try {
+
+                    resultObject = new JSONObject(result);
+
+                    returnedResult = resultObject.getString("success");
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+
+                }
+
+                return returnedResult;
+
             }
+
+
         }
 
+
     }
+
+
 
     public ProductAdapter(ArrayList<ProductInfo> prinfo) {
         this.inf = prinfo;

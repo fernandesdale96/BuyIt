@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.ViewHolder>{
 
 
-    private ArrayList<CCInfo> cc;
+    private ArrayList<String> cc;
     PaymentAdapter selfRef;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -32,7 +32,7 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.ViewHold
 
     }
 
-    public PaymentAdapter(ArrayList<CCInfo> cc) {
+    public PaymentAdapter(ArrayList<String> cc) {
         this.cc = cc;
     }
 
@@ -44,10 +44,9 @@ public class PaymentAdapter extends RecyclerView.Adapter<PaymentAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position){
-        CCInfo ccinfo = cc.get(position);
-        String cnum = ccinfo.getCnum();
-        cnum = cnum.replaceAll("....","$0");
-        viewHolder.cnum.setText(cnum);
+        String ccinfo = cc.get(position);
+        ccinfo = ccinfo.replaceAll("....","$0");
+        viewHolder.cnum.setText(ccinfo);
     }
 
     @Override

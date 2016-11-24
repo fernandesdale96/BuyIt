@@ -29,7 +29,7 @@ public class testProductList {
         String[] stores = {"Welcome", "Taste", "Park n Shop", "Taste", "Market Place", "Taste", "Welcome", "7-11", "Circle K", "Park n Shop", "7-11", "Welcome"};
 
         for(int i = 0; i < name.length; i++){
-            ProductInfo pinf = new ProductInfo(name[i], prices[i], distances[i], stores[i]);
+            ProductInfo pinf = new ProductInfo(name[i], prices[i], stores[i]);
             products.add(pinf);
         }
 

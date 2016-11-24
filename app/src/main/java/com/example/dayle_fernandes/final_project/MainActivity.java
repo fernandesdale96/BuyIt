@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.hardware.fingerprint.FingerprintManager;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton search = (FloatingActionButton) findViewById(com.example.dayle_fernandes.final_project.R.id.search);
+        /*FloatingActionButton search = (FloatingActionButton) findViewById(com.example.dayle_fernandes.final_project.R.id.search);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Snackbar.make(view, "Implement Search Function", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(com.example.dayle_fernandes.final_project.R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -182,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
        // aAdapter.notifyDataSetChanged();
     }
 
+
+
     private class GetQuestions extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -220,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         String price = c.getString(PRICE);
                         String loc = c.getString(LOCATION);
                         String dist = c.getString(DISTANCE);
-                        ProductInfo p=new ProductInfo(name,Double.parseDouble(price),Double.parseDouble(dist),loc);
+                        ProductInfo p=new ProductInfo(name,Double.parseDouble(price),loc);
 
 
                         productsList.add(p);
@@ -339,6 +342,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else if (id == com.example.dayle_fernandes.final_project.R.id.nav_exit) {
             finish();
             System.exit(0);
+        }else if(id == R.id.nav_history){
+            Intent i = new Intent(this,PurchasedActivity.class);
+            startActivity(i);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(com.example.dayle_fernandes.final_project.R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

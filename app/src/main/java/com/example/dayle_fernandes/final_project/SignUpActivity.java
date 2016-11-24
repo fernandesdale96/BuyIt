@@ -27,22 +27,37 @@ import com.loopj.android.http.RequestParams;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.client.ClientProtocolException;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.params.BasicHttpParams;
+import cz.msebera.android.httpclient.params.HttpParams;
 
 import static android.R.attr.name;
 import static android.R.attr.password;
+import static android.R.attr.start;
 import static android.R.id.input;
+import static com.example.dayle_fernandes.final_project.ServiceHandler.response;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -60,12 +75,15 @@ public class SignUpActivity extends AppCompatActivity {
     String uname, upass, uemail;
     SignUpActivity selfref = this;
 
+
     private static String url_register = "http://10.0.2.2/FinalProject/register.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+
 
 
         mProgressDialog = new ProgressDialog(this);
@@ -109,44 +127,15 @@ public class SignUpActivity extends AppCompatActivity {
         uname = user_name.getText().toString();
         uemail = user_email.getText().toString();
         upass = user_password.getText().toString();
-        HttpClient client = new DefaultHttpClient();
-        //String my_url;
-        //Toast.makeText(getApplicationContext(), "Trying to sign in", Toast.LENGTH_LONG).show();
+        //Log.d("signup name check",uname);
 
-        //my_url = "http://10.0.2.2/FinalProject/android_register.php?name=" + uname + "&email" + uemail + "&password" + upass;
-        //Log.d("url: ",my_url);
+
 
 
         if (!uname.isEmpty() && !uemail.isEmpty() && !upass.isEmpty()) {
 
-            new RegisterUser().execute(uname,uemail,upass);
+            new RegisterUser().execute(uname, uemail, upass);
 
-            /*RequestParams rp = new RequestParams();
-            rp.add("username", uname);
-            rp.add("password", upass);
-            rp.add("email", uemail);
-
-            Log.i("Running Request", uemail + " " + upass);
-
-            RESTClient.post("register.php", rp, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-                    try {
-                        String reqResult = response.getString("success");
-                        if (reqResult.equals("true")) {
-                            signup_button.setEnabled(true);
-                            Intent i = new Intent(SignUpActivity.this, LoginActivity.class);
-                            startActivity(i);
-                            finish();
-                        }
-
-                    } catch (JSONException e) {
-                        Log.e(TAG, "onSuccess: " + e.getStackTrace().toString());
-                    }
-
-                }
-            });*/
 
         } else {
             Toast.makeText(getApplicationContext(),
@@ -158,13 +147,11 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    class RegisterUser extends AsyncTask<String,String,String>{
+    private class RegisterUser extends AsyncTask<String, Void, String> {
 
-
-        //Dialog before starting background thread
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             super.onPreExecute();
             mProgressDialog.setMessage("Creating Account");
             mProgressDialog.setIndeterminate(false);
@@ -172,58 +159,132 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... args){
+        protected String doInBackground(String... args) {
+
+            org.apache.http.params.HttpParams httpParameters = new org.apache.http.params.BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
+            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+            HttpClient httpClient = new DefaultHttpClient(httpParameters);
+            org.apache.http.client.methods.HttpPost httpPost = new org.apache.http.client.methods.HttpPost(url_register);
+            String jsonresult = "";
+
 
             String aemail = args[1];
             String auname = args[0];
+            Log.d("Name Check",uname);
             String upass = args[2];
 
-            String jsonStr="";
 
+            //ServiceHandler sh = new ServiceHandler();
 
             try {
-                ServiceHandler sh = new ServiceHandler();
+                List params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("name", auname));
+                Log.d("sending name check",uname);
+                params.add(new BasicNameValuePair("email", aemail));
+                params.add(new BasicNameValuePair("password", upass));
 
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("name",auname));
-                params.add(new BasicNameValuePair("email",aemail));
-                params.add(new BasicNameValuePair("password",upass));
-
-                jsonStr = sh.makeServiceCall(url_register,ServiceHandler.POST,params);
-
-                Log.d("Register Response",jsonStr.toString());
-
-
-
-
-            }catch (Exception e){
+                httpPost.setEntity(new UrlEncodedFormEntity(params));
+                HttpResponse response = httpClient.execute(httpPost);
+                jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
+                Log.d("Sending data",jsonresult.toString());
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            {
-                int success = jsonStr.compareTo("success");
-                if(success==0){
-                    Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(i);
-                    finish();
 
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "User already exists, Please choose a different Email", Toast.LENGTH_SHORT).show();
-                }
-            }
-            return null;
+            Log.d("Register Response", jsonresult.toString());
+
+            return jsonresult;
+
+
 
         }
+
 
         @Override
-        protected void onPostExecute(String result){
-            selfref.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mProgressDialog.dismiss();
-                }
-            });
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            System.out.println("Resulted Value: " + result);
+
+            if (result.equals("") || result == null) {
+
+                Toast.makeText(SignUpActivity.this, "Server connection failed", Toast.LENGTH_LONG).show();
+                hideDialog();
+
+                return;
+
+            }
+
+            String jsonResult = returnParsedJsonObject(result);
+
+            if (jsonResult == "false") {
+
+                Toast.makeText(SignUpActivity.this, "User already exists", Toast.LENGTH_LONG).show();
+                hideDialog();
+                onSignupFailed();
+
+                return;
+            }
+
+            if(jsonResult == "true"){
+                hideDialog();
+
+                onSignupSuccess();
+            }
         }
+
+        private StringBuilder inputStreamToString(InputStream is) {
+
+            String rLine = "";
+
+            StringBuilder answer = new StringBuilder();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            try {
+
+                while ((rLine = br.readLine()) != null) {
+
+                    answer.append(rLine);
+
+                }
+
+            } catch (IOException e) {
+
+
+                e.printStackTrace();
+
+            }
+
+            return answer;
+
+        }
+
+        private String returnParsedJsonObject(String result) {
+
+            JSONObject resultObject = null;
+
+            String returnedResult = "";
+
+            try {
+
+                resultObject = new JSONObject(result);
+
+                returnedResult = resultObject.getString("success");
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+
+            }
+
+            return returnedResult;
+
+        }
+
+
     }
 
 
@@ -238,9 +299,18 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getBaseContext(), "Signup failed", Toast.LENGTH_LONG).show();
 
         signup_button.setEnabled(true);
+    }
+
+    public void onSignupSuccess() {
+        signup_button.setEnabled(true);
+
+        Intent i = new Intent(SignUpActivity.this, LoginActivity.class);
+        startActivity(i);
+        finish();
+
     }
 
     public boolean validate() {

@@ -111,7 +111,7 @@ public class PurchasedActivity extends AppCompatActivity{
 
             if (result.equals("") || result == null) {
 
-                Toast.makeText(PurchasedActivity.this, "Server connection failed", Toast.LENGTH_LONG).show();
+                //Toast.makeText(PurchasedActivity.this, "Server connection failed", Toast.LENGTH_LONG).show();
 
 
                 return;
@@ -122,13 +122,13 @@ public class PurchasedActivity extends AppCompatActivity{
 
             if (jsonResult == "false") {
 
-                Toast.makeText(PurchasedActivity.this, "Products could not be removed from Basket", Toast.LENGTH_LONG).show();
+                //Toast.makeText(PurchasedActivity.this, "Products could not be removed from Basket", Toast.LENGTH_LONG).show();
 
                 return;
             }
 
             if(jsonResult == "true"){
-                Toast.makeText(PurchasedActivity.this, "Product Removed from Basket", Toast.LENGTH_LONG).show();
+                //Toast.makeText(PurchasedActivity.this, "Product Removed from Basket", Toast.LENGTH_LONG).show();
 
 
             }

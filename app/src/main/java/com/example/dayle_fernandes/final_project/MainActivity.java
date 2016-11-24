@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.hardware.fingerprint.FingerprintManager;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -181,6 +182,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
        // aRecyclerView.setAdapter(aAdapter);
        // aAdapter.notifyDataSetChanged();
     }
+
+
 
     private class GetQuestions extends AsyncTask<Void, Void, Void> {
 

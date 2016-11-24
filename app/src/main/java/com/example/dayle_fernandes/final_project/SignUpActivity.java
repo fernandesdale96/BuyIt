@@ -171,7 +171,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             String aemail = args[1];
             String auname = args[0];
-            //Log.d("Name Check",uname);
+            Log.d("Name Check",uname);
             String upass = args[2];
 
 
@@ -180,14 +180,14 @@ public class SignUpActivity extends AppCompatActivity {
             try {
                 List params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("name", auname));
-                //Log.d("sending name check",uname);
+                Log.d("sending name check",uname);
                 params.add(new BasicNameValuePair("email", aemail));
                 params.add(new BasicNameValuePair("password", upass));
 
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
                 HttpResponse response = httpClient.execute(httpPost);
                 jsonresult = inputStreamToString(response.getEntity().getContent()).toString();
-                //jsonStr = sh.makeServiceCall(url_register,ServiceHandler.POST,params);
+                Log.d("Sending data",jsonresult.toString());
             } catch (ClientProtocolException e) {
                 e.printStackTrace();
             } catch (IOException e) {

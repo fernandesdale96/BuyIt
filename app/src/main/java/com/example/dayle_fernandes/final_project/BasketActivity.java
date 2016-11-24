@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -24,6 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.github.ajalt.reprint.core.AuthenticationFailureReason;
+import com.github.ajalt.reprint.core.AuthenticationListener;
+import com.github.ajalt.reprint.core.Reprint;
 import com.google.android.gms.vision.text.Text;
 
 import org.apache.http.HttpResponse;
@@ -87,6 +91,7 @@ public class BasketActivity extends AppCompatActivity {
     String aemail = LoginActivity.getEmail();
     private String url_all_products = "http://10.0.2.2/FinalProject/show_basket_products.php";
     private String url_purchase = "http://10.0.2.2/FinalProject/purchase.php";
+    boolean running;
     // ArrayList<HashMap<String, String>> productList = new ArrayList<HashMap<String, String>>();
 
     @Override
@@ -103,7 +108,9 @@ public class BasketActivity extends AppCompatActivity {
         purchase.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast.makeText(BasketActivity.this,"Validating Purchase",Toast.LENGTH_LONG);
+
+
+
                 for(ProductInfo p : productsList){
                     String name = p.getName();
                     String price = Double.toString(p.getPrice());
@@ -112,13 +119,30 @@ public class BasketActivity extends AppCompatActivity {
                     new BuyProduct().execute(name,price,location,email);
                 }
 
-                Intent i = new Intent(BasketActivity.this,PurchasedActivity.class);
-                startActivity(i);
-                finish();
+
+
+                pDialog = new ProgressDialog(selfRef);
+                pDialog.show(selfRef,"","Purchasing...",true);
+
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+
+                        Intent i = new Intent(BasketActivity.this,PurchasedActivity.class);
+                        pDialog.dismiss();
+                        startActivity(i);
+
+                        finish();
+                    }
+                }, 3000);
+
+
+
 
 
             }
         });
+        running = false;
 
 
         // Hashmap for ListView
@@ -131,6 +155,11 @@ public class BasketActivity extends AppCompatActivity {
 
         new GetQuestions().execute();
     }
+
+
+
+
+
 
     private class BuyProduct extends AsyncTask<String, Void, String>{
 

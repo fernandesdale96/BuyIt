@@ -76,7 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
     SignUpActivity selfref = this;
 
 
-    private static String url_register = "http://10.0.2.2/FinalProject/register.php";
+    private static String url_register = "http://175.159.69.203//FinalProject/register.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

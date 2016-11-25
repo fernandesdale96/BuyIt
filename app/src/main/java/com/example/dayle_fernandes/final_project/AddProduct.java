@@ -48,7 +48,7 @@ public class AddProduct extends Activity {
 
     private ProgressDialog pDialog;
 
-    private static String url_create_product = "http://10.0.2.2/FinalProject/create_product.php";
+    private static String url_create_product = "http://175.159.69.203/FinalProject/create_product.php";
 
     private static final String TAG_SUCCESS = "success";
     private static final int CAMERA_REQUEST = 1888;
@@ -176,7 +176,7 @@ public class AddProduct extends Activity {
             String price = args[1];
             String description = args[2];
             String location = args[3];
-            String img = args[4];
+
 
             try{
                 List params = new ArrayList<NameValuePair>();
@@ -184,7 +184,7 @@ public class AddProduct extends Activity {
                 params.add(new BasicNameValuePair("price", price));
                 params.add(new BasicNameValuePair("description",description));
                 params.add(new BasicNameValuePair("location",location));
-                params.add(new BasicNameValuePair("image", img));
+
                 Log.d("Sending data", params.toString());
 
                 httpPost.setEntity(new UrlEncodedFormEntity(params));

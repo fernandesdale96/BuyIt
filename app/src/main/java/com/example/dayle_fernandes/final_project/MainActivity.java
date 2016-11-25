@@ -16,6 +16,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -73,6 +74,8 @@ import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import org.apache.http.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     ArrayList<ProductInfo> productsList;
     // url to get all products list
-    private static String url_all_products = "http://10.0.2.2/FinalProject/get_all_products.php";
+    private static String url_all_products = "http://175.159.69.203/FinalProject/get_all_products.php";
 
     private ProgressDialog pDialog;
     private static final String PRODUCTS = "products";
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String DESCRIPTION= "description";
     private static final String CREATED_AT= "created_at";
     private static final String UPDATED_AT= "updated_at";
+    private SearchView searchView;
 
     JSONArray products=null;
     JSONObject obj;
@@ -287,6 +291,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    private ArrayList<ProductInfo> getSearchedProducts(String input){
+        ArrayList<ProductInfo> list = new ArrayList<>();
+        for(ProductInfo p:productsList){
+            if(p.getName().toLowerCase().contains(input.toLowerCase())){
+                list.add(p);
+            }
+        }
+        return list;
+    }
+
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(com.example.dayle_fernandes.final_project.R.id.drawer_layout);
@@ -301,8 +317,66 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(com.example.dayle_fernandes.final_project.R.menu.main, menu);
+        MenuItem searchViewMenuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchViewMenuItem.getActionView();
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Toast t = Toast.makeText(MainActivity.this, "clear search", Toast.LENGTH_SHORT);
+                t.show();
+
+                aAdapter = new ProductAdapter(productsList);
+                aRecyclerView.setAdapter(aAdapter);
+
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                aAdapter = new ProductAdapter(productsList);
+                aRecyclerView.setAdapter(aAdapter);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<ProductInfo> pList = productsList;
+                RecyclerView.Adapter newAdapter;
+                if(newText.equalsIgnoreCase("")){
+                    pList=getSearchedProducts("");
+                    aAdapter = new ProductAdapter(pList);
+                    aRecyclerView.setAdapter(aAdapter);
+                }
+                Log.i("Text change", newText);
+                pList=getSearchedProducts(newText);
+                newAdapter = new ProductAdapter(pList);
+                aRecyclerView.setAdapter(newAdapter);
+                return true;
+            }
+        });
         return true;
+
+
     }
+
+    private void setupSearchView() {
+        //searchView.setIconifiedByDefault(true);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        searchView.setQueryHint("Search Here");
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

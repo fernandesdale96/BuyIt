@@ -57,7 +57,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     private ArrayList<ProductInfo> inf;
     ProductAdapter selfRef = this;
-    String url_basket = "http://10.0.2.2/FinalProject/basket.php";
+    String url_basket = "http://175.159.69.203/FinalProject/basket.php";
     private ProgressDialog pDialog;
     private static final String TAG_SUCCESS = "success";
     private String email = LoginActivity.getEmail();

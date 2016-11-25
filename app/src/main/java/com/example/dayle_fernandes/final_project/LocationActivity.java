@@ -90,7 +90,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     String name;
     String price;
     String store;
-    private static String url_basket = "http://10.0.2.2/FinalProject/basket.php";
+    private static String url_basket = "http://175.159.69.203/FinalProject/basket.php";
 
 
     @Override

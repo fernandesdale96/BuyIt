@@ -31,7 +31,7 @@ public class PaymentActivity extends AppCompatActivity {
     RecyclerView.LayoutManager aLayoutManager;
     RecyclerView.Adapter aAdapter;
     String email = LoginActivity.getEmail();
-    String url = "http://10.0.2.2/FinalProject/show_cc.php";
+    String url = "http://175.159.69.203/FinalProject/show_cc.php";
     ProgressDialog pDialog;
 
     ArrayList<String> cclist;

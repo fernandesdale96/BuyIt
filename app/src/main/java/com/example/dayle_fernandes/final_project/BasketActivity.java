@@ -89,8 +89,8 @@ public class BasketActivity extends AppCompatActivity {
     JSONArray products = null;
     JSONObject obj;
     String aemail = LoginActivity.getEmail();
-    private String url_all_products = "http://10.0.2.2/FinalProject/show_basket_products.php";
-    private String url_purchase = "http://10.0.2.2/FinalProject/purchase.php";
+    private String url_all_products = "http://175.159.69.203/FinalProject/show_basket_products.php";
+    private String url_purchase = "http://175.159.69.203/FinalProject/purchase.php";
     boolean running;
     // ArrayList<HashMap<String, String>> productList = new ArrayList<HashMap<String, String>>();
 

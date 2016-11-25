@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/total_text"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="420dp"
         android:layout_marginLeft="5dp"
         android:textSize="15dp"
         android:text="Total Amount: "/>
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/total_amount"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="420dp"
         android:layout_marginLeft="100dp"
         android:textSize="15dp"
         android:text="250 HKD"/>
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/total_item"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="420dp"
         android:layout_marginLeft="180dp"
         android:textSize="15dp"
         android:text="Products in Basket: "/>
@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:id="@+id/item_number"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="420dp"
         android:layout_marginLeft="310dp"
         android:textSize="15dp"
         android:text="10"/>

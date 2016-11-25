@@ -45,7 +45,7 @@ public class CreditCardForm extends AppCompatActivity implements OnCardFormSubmi
 
     protected CardForm mCardForm;
     private String email = LoginActivity.getEmail();
-    private static String url = "http://10.0.2.2/FinalProject/ccard.php";
+    private static String url = "http://175.159.69.203/FinalProject/ccard.php";
 
 
     @Override

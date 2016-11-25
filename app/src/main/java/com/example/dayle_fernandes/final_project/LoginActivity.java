@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private SessionManager session;
 
 
-    private static String url_log_in = "http://10.0.2.2/FinalProject/login.php";
+    private static String url_log_in = "http://175.159.69.203/FinalProject/login.php";
     private static final String TAG = LoginActivity.class.getSimpleName();
 
 

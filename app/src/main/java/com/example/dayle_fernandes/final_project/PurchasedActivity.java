@@ -45,8 +45,8 @@ public class PurchasedActivity extends AppCompatActivity{
     ArrayList<ProductInfo> productsList;
 
     private ProgressDialog pDialog;
-    String url = "http://10.0.2.2/FinalProject/show_purchase.php";
-    String url_delete = "http://10.0.2.2/FinalProject/delete_basket.php";
+    String url = "http://175.159.69.203/FinalProject/show_purchase.php";
+    String url_delete = "http://175.159.69.203/FinalProject/delete_basket.php";
     String aemail = LoginActivity.getEmail();
     JSONArray products = null;
 
